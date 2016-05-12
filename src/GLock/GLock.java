@@ -1,4 +1,4 @@
-package rk;
+package GLock;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -28,7 +28,7 @@ import javax.swing.text.SimpleAttributeSet;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.Statement;
 
-public class rk extends JFrame {
+public class GLock extends JFrame {
 
 	private JButton[] buttons;
 	private JPanel Panel;
@@ -41,7 +41,7 @@ public class rk extends JFrame {
 	sqlConnect sc;
 	List<String> disposablePwd = new ArrayList<>();
 	
-	public rk() {
+	public GLock() {
 		
 		
 		this.setSize(500, 500);
@@ -79,7 +79,7 @@ public class rk extends JFrame {
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				new rk();
+				new GLock();
 			}
 		});
 		
