@@ -230,7 +230,8 @@ public class GLock extends JFrame {
 		
 		public sqlConnect() {
 			// TODO Auto-generated constructor stub
-			url = "jdbc:mysql://192.168.0.9:3306/testserver";
+			// a url which indicates server/dbname
+			url = "jdbc:mysql://192.168.0.9:3306/test";
 			con = null;
 			stmt = null;
 			rs = null;
@@ -255,6 +256,7 @@ public class GLock extends JFrame {
 			try{
 				
 				System.out.println("try-catch test statement!");
+				// database id and password
 				con = (Connection) DriverManager.getConnection(url,"pi","raspberry");
 				System.out.println("mysql access Successed!!!");
 				stmt = (Statement) con.createStatement();
@@ -292,7 +294,7 @@ public class GLock extends JFrame {
 		public void sendDate()
 		{
 			try {
-				SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
+				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String date = format.format(new Date());
 				stmt.executeUpdate("insert into test (name) values('" + date + "');");
 				
