@@ -206,7 +206,7 @@ public class GLock extends JFrame {
 				ShuffleButtons();
 				btnPressCnt=0;
 				if(linuxFlag)
-					networking.uploadFile("raspistill -t 100 -o " + imageSrcPath + "/" + getId() + "_" + date + ".jpg");
+					networking.uploadFile(imageSrcPath + getId() + "_" + date + ".jpg");
 			}
 		});
 		return check;
@@ -241,7 +241,7 @@ public class GLock extends JFrame {
 		{
 			
 
-			networking.executeCommand("raspistill -t 100 -o " + imageSrcPath + "/" + getId() + "_" + date + ".jpg");
+			networking.executeCommand("raspistill -t 100 -o " + imageSrcPath + getId() + "_" + date + ".jpg");
 
 		}
 		
