@@ -38,7 +38,7 @@ public class networking {
 		
 		        // open a URL connection to the Servlet
 		        FileInputStream fileInputStream = new FileInputStream(sourceFile);
-		        URL url = new URL("http://localhost:80/upload.php");
+		        URL url = new URL("http://218.150.181.86:3000/upload.php");
 		
 		        // Open a HTTP  connection to  the URL
 		        conn = (HttpURLConnection) url.openConnection();

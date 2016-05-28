@@ -41,19 +41,19 @@ public class GLock extends JFrame {
 	private String lPwd;
 	sqlConnect sc;
 	List<String> disposablePwd = new ArrayList<>();
-	int btnPressCnt=1;
-	boolean linuxFlag=true;
+	int btnPressCnt = 0;
+	boolean linuxFlag = true;
 	
 	String srcPath = "/home/pi/project/";
 	String imageSrcPath = srcPath + "image/";
 	// get date
-	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 	String date;
 	public GLock() {
 		
 		date = format.format(new Date());
 		
-		this.setSize(320, 480);
+		this.setSize(480, 320);
 		
 		Panel = new JPanel(new GridLayout(3, 4));
 		buttons = getButtons(12);
@@ -164,13 +164,14 @@ public class GLock extends JFrame {
 					// pressed");
 					System.out.println(e.getActionCommand());
 					input = input + e.getActionCommand();
+
 					if(btnPressCnt < 1)
 					{
 						if(linuxFlag)
 							takePicture();
-						
+
 					}
-					System.out.println(btnPressCnt);
+
 					btnPressCnt++;
 				}
 			});
@@ -236,15 +237,10 @@ public class GLock extends JFrame {
 	
 	public void takePicture()
 	{
-		
-		if(linuxFlag)
-		{
-			
-
+			System.out.println( imageSrcPath + getId() + "_" + date + ".jpg");
 			networking.executeCommand("raspistill -t 100 -o " + imageSrcPath + getId() + "_" + date + ".jpg");
 
-		}
-		
+
 	}
 	
 	public void exitProgram()
