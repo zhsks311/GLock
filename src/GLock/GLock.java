@@ -46,9 +46,12 @@ public class GLock extends JFrame {
 	
 	String srcPath = "/home/pi/project/";
 	String imageSrcPath = srcPath + "image/";
-	
+	// get date
+	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	String date;
 	public GLock() {
 		
+		date = format.format(new Date());
 		
 		this.setSize(320, 480);
 		
@@ -167,6 +170,7 @@ public class GLock extends JFrame {
 							takePicture();
 						
 					}
+					System.out.println(btnPressCnt);
 					btnPressCnt++;
 				}
 			});
@@ -202,7 +206,7 @@ public class GLock extends JFrame {
 				ShuffleButtons();
 				btnPressCnt=0;
 				if(linuxFlag)
-					networking.uploadFile(imageSrcPath);
+					networking.uploadFile("raspistill -t 100 -o " + imageSrcPath + "/" + getId() + "_" + date + ".jpg");
 			}
 		});
 		return check;
@@ -235,9 +239,7 @@ public class GLock extends JFrame {
 		
 		if(linuxFlag)
 		{
-			// get date
-			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			String date = format.format(new Date());
+			
 
 			networking.executeCommand("raspistill -t 100 -o " + imageSrcPath + "/" + getId() + "_" + date + ".jpg");
 
