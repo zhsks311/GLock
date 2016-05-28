@@ -134,8 +134,8 @@ class sqlConnect {
 			rs = stmt.executeQuery(query);
 			if(rs.next())
 				result = rs.getInt(1);
-			
-		} catch (SQLException e) {
+		
+		} catch (SQLException e) {	
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

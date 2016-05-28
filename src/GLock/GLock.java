@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.DriverManager;
@@ -40,6 +41,12 @@ public class GLock extends JFrame {
 	private String lPwd;
 	sqlConnect sc;
 	List<String> disposablePwd = new ArrayList<>();
+	int btnPressCnt=1;
+	Runtime clsRuntime = Runtime.getRuntime();
+	boolean linuxFlag=false;
+	
+	String srcPath = "/home/pi/project/";
+	String imageSrcPath = srcPath + "image/";
 	
 	public GLock() {
 		
@@ -134,6 +141,8 @@ public class GLock extends JFrame {
 	
 	// create buttons
 	private JButton[] getButtons(int size) {
+		
+		
 		JButton[] buttons = new JButton[size];
 		String strs[] = { "*", "#", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" };
 		List<String> list;
@@ -153,7 +162,13 @@ public class GLock extends JFrame {
 					// pressed");
 					System.out.println(e.getActionCommand());
 					input = input + e.getActionCommand();
-					
+					if(btnPressCnt < 1)
+					{
+						if(linuxFlag)
+							takePicture();
+						
+					}
+					btnPressCnt++;
 				}
 			});
 			buttons[i] = button;
@@ -174,7 +189,7 @@ public class GLock extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				System.out.print("\n"+input);
 				if(input.equals(lPwd)){
-					ShuffleButtons();
+					
 					input="";
 					sc.connectToMysql();
 					sc.sendDate();
@@ -182,10 +197,13 @@ public class GLock extends JFrame {
 					JOptionPane.showMessageDialog(null, "OPEN");
 				}else{
 					JOptionPane.showMessageDialog(null, "Passwords incorrected.");
-					ShuffleButtons();
+					
 					input="";
 				}
-				
+				ShuffleButtons();
+				btnPressCnt=0;
+				if(linuxFlag)
+					networking.uploadFile(imageSrcPath);
 			}
 		});
 		return check;
@@ -210,6 +228,30 @@ public class GLock extends JFrame {
 		}
 		
 		return false;
+		
+	}
+	
+	public void takePicture()
+	{
+		
+		if(linuxFlag)
+		{
+			// get date
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String date = format.format(new Date());
+
+			Process clsProc;
+			try {
+				// excute command for take picture
+				// time 100ms, quality 100, name id+date.jpg
+				clsProc = clsRuntime.exec( "raspistill -t 100 -q 100 -o " + imageSrcPath + getId() +"_" + date + ".jpg" );
+				clsProc.waitFor();
+			} catch (IOException | InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 		
 	}
 	
