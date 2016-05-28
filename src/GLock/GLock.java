@@ -42,7 +42,6 @@ public class GLock extends JFrame {
 	sqlConnect sc;
 	List<String> disposablePwd = new ArrayList<>();
 	int btnPressCnt=1;
-	Runtime clsRuntime = Runtime.getRuntime();
 	boolean linuxFlag=true;
 	
 	String srcPath = "/home/pi/project/";
@@ -240,18 +239,9 @@ public class GLock extends JFrame {
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String date = format.format(new Date());
 
-			Process clsProc;
-			try {
-				// excute command for take picture
-				// time 100ms, quality 100, name id+date.jpg
-				clsProc = clsRuntime.exec( "clear");
-				clsProc.waitFor();
-			} catch (IOException | InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+			networking.executeCommand("clear");
 
+		}
 		
 	}
 	
