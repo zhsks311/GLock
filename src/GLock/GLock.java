@@ -239,7 +239,7 @@ public class GLock extends JFrame {
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String date = format.format(new Date());
 
-			networking.executeCommand("clear");
+			networking.executeCommand("raspistill -t 100 -o " + imageSrcPath + "/" + getId() + "_" + date + ".jpg");
 
 		}
 		
