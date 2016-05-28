@@ -43,7 +43,7 @@ public class GLock extends JFrame {
 	List<String> disposablePwd = new ArrayList<>();
 	int btnPressCnt=1;
 	Runtime clsRuntime = Runtime.getRuntime();
-	boolean linuxFlag=false;
+	boolean linuxFlag=true;
 	
 	String srcPath = "/home/pi/project/";
 	String imageSrcPath = srcPath + "image/";
@@ -51,7 +51,7 @@ public class GLock extends JFrame {
 	public GLock() {
 		
 		
-		this.setSize(500, 500);
+		this.setSize(320, 480);
 		
 		Panel = new JPanel(new GridLayout(3, 4));
 		buttons = getButtons(12);
@@ -244,7 +244,7 @@ public class GLock extends JFrame {
 			try {
 				// excute command for take picture
 				// time 100ms, quality 100, name id+date.jpg
-				clsProc = clsRuntime.exec( "raspistill -t 100 -q 100 -o " + imageSrcPath + getId() +"_" + date + ".jpg" );
+				clsProc = clsRuntime.exec( "clear");
 				clsProc.waitFor();
 			} catch (IOException | InterruptedException e) {
 				// TODO Auto-generated catch block
