@@ -29,6 +29,17 @@ import javax.swing.text.SimpleAttributeSet;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.Statement;
 
+/*
+ * For Linux
+//pi4j
+import com.pi4j.io.gpio.GpioController;
+import com.pi4j.io.gpio.GpioFactory;
+import com.pi4j.io.gpio.GpioPinDigitalOutput;
+import com.pi4j.io.gpio.PinState;
+import com.pi4j.io.gpio.RaspiPin;
+*/
+
+
 public class GLock extends JFrame {
 
 	private JButton[] buttons;
@@ -42,18 +53,24 @@ public class GLock extends JFrame {
 	sqlConnect sc;
 	List<String> disposablePwd = new ArrayList<>();
 	int btnPressCnt = 0;
-	boolean linuxFlag = true;
+	boolean linuxFlag = false;
 	
 	String srcPath = "/home/pi/project/";
 	String imageSrcPath = srcPath + "image/";
 	// get date
 	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 	String date;
+	
+	
+	
 	public GLock() {
+		
+		//networking.sockClient();
+		networking.runServer();
 		
 		date = format.format(new Date());
 		
-		this.setSize(480, 320);
+		this.setSize(480, 320); 
 		
 		Panel = new JPanel(new GridLayout(3, 4));
 		buttons = getButtons(12);
@@ -64,12 +81,17 @@ public class GLock extends JFrame {
 
 		this.setVisible(true);
 		
+		/*
+		 * For Linux
+		// set Gpio for door control
+		setGpio();
+		*/
+		
+		
 		// initializing
 		// jdbcDriverLoad is needed when we use this program in Linux
 		sc = new sqlConnect();
-		
 		defaultIdSet();
-		
 		sc.connectToMysql();
 		
 		//sc.jdbcDriverLoad
@@ -191,14 +213,17 @@ public class GLock extends JFrame {
 
 		check.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
 				System.out.print("\n"+input);
 				if(input.equals(lPwd)){
 					
 					input="";
+					
+					JOptionPane.showMessageDialog(null, "OPEN");
 					sc.connectToMysql();
 					sc.sendDate();
 					sc.closeConnection();
-					JOptionPane.showMessageDialog(null, "OPEN");
+					
 				}else{
 					JOptionPane.showMessageDialog(null, "Passwords incorrected.");
 					
@@ -208,6 +233,7 @@ public class GLock extends JFrame {
 				btnPressCnt=0;
 				if(linuxFlag)
 					networking.uploadFile(imageSrcPath + getId() + "_" + date + ".jpg");
+			
 			}
 		});
 		return check;
@@ -240,8 +266,41 @@ public class GLock extends JFrame {
 			System.out.println( imageSrcPath + getId() + "_" + date + ".jpg");
 			networking.executeCommand("raspistill -t 100 -o " + imageSrcPath + getId() + "_" + date + ".jpg");
 
+	}
+
+	
+/*
+ * For Linux
+	public void setGpio()
+	{
+		// create gpio controller
+		gpio = GpioFactory.getInstance();
+
+		//provision gpio pin #01 as an output pin and turn off
+		pin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_27, "MyLED", PinState.HIGH);
+
+		// set shutdown state for this pin
+	        pin.setShutdownOptions(true, PinState.HIGH);
+	}
+
+	public void openDoor()
+	{
+
+		// gpio low
+		pin.low();
+
+		try{
+		// wait for next work
+		Thread.sleep(100);
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+		// gpio high for maintain normal state
+		pin.high();
 
 	}
+*/
 	
 	public void exitProgram()
 	{
