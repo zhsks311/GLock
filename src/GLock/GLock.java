@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -52,23 +53,27 @@ public class GLock extends JFrame {
 	private String lPwd;
 	sqlConnect sc;
 	List<String> disposablePwd = new ArrayList<>();
+	
+	// counting how many number button pressed
 	int btnPressCnt = 0;
+	
 	boolean linuxFlag = false;
+	private int falseCount = 0;
 	
 	String srcPath = "/home/pi/project/";
 	String imageSrcPath = srcPath + "image/";
-	// get date
-	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+
 	String date;
 	
-	
-	
+	// variable for secure time
+	HashMap<String, Boolean> day = new HashMap<String, Boolean>();
+	int sStartHour = 0;
+	int sEndHour = 0;
+
 	public GLock() {
 		
 		//networking.sockClient();
 		networking.runServer();
-		
-		date = format.format(new Date());
 		
 		this.setSize(480, 320); 
 		
@@ -87,6 +92,16 @@ public class GLock extends JFrame {
 		setGpio();
 		*/
 		
+		// test initialization
+		// need to get data from server later
+		// and input data to variable
+		day.put("Mon", true);
+		day.put("Tue", true);
+		day.put("Wed", true);
+		day.put("Thu", false);
+		day.put("Fri", false);
+		day.put("Sat", false);
+		day.put("Sun", false);
 		
 		// initializing
 		// jdbcDriverLoad is needed when we use this program in Linux
@@ -186,15 +201,14 @@ public class GLock extends JFrame {
 					// pressed");
 					System.out.println(e.getActionCommand());
 					input = input + e.getActionCommand();
-
-					if(btnPressCnt < 1)
+					
+					if((isSecureTime() || falseCount > 2) && btnPressCnt++ < 1)
 					{
 						if(linuxFlag)
 							takePicture();
 
 					}
 
-					btnPressCnt++;
 				}
 			});
 			buttons[i] = button;
@@ -217,23 +231,44 @@ public class GLock extends JFrame {
 				System.out.print("\n"+input);
 				if(input.equals(lPwd)){
 					
-					input="";
+					/*
+					 * For Linux
+					 * openDoor();
+					 */
 					
+					// reset the counts that is added when input wrong password
+					falseCount = 0;
 					JOptionPane.showMessageDialog(null, "OPEN");
-					sc.connectToMysql();
-					sc.sendDate();
-					sc.closeConnection();
-					
+				
 				}else{
-					JOptionPane.showMessageDialog(null, "Passwords incorrected.");
 					
-					input="";
+					// increase the counts for password incorrect 
+					falseCount++;
+					JOptionPane.showMessageDialog(null, "Passwords incorrected.");
 				}
+				
+				if(isSecureTime() || falseCount > 2)
+				{
+
+					// send a picture
+					if(linuxFlag)
+						networking.uploadFile(imageSrcPath + getId() + "_" + networking.getTime(); + ".jpg");
+				
+					
+				}
+				
+				input="";
+				sc.connectToMysql();
+				sc.sendLog();
+				sc.closeConnection();
+				
 				ShuffleButtons();
+				
+				// btnPressCnt is for timing to take a picture
+				// it is used to check
+				// Does number button be pressed first
 				btnPressCnt=0;
-				if(linuxFlag)
-					networking.uploadFile(imageSrcPath + getId() + "_" + date + ".jpg");
-			
+				
 			}
 		});
 		return check;
@@ -263,9 +298,30 @@ public class GLock extends JFrame {
 	
 	public void takePicture()
 	{
-			System.out.println( imageSrcPath + getId() + "_" + date + ".jpg");
-			networking.executeCommand("raspistill -t 100 -o " + imageSrcPath + getId() + "_" + date + ".jpg");
+		date = networking.getTime();
+		System.out.println( imageSrcPath + getId() + "_" + date + ".jpg");
+		networking.executeCommand("raspistill -t 100 -o " + imageSrcPath + getId() + "_" + date + ".jpg");
 
+	}
+	
+	public boolean isSecureTime(){
+		
+		String today = networking.getDay();
+		
+		// hour - the hour-of-day to represent, from 0 to 23
+		java.time.LocalTime systemTime = java.time.LocalTime.now();
+		int hour = systemTime.getHour(); 
+
+		
+
+		if(day.get(today))
+			return false;
+		
+		if(!(sStartHour <= hour && sEndHour > hour))
+			return false;
+		
+		
+		return true;
 	}
 
 	

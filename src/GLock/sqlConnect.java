@@ -17,6 +17,7 @@ class sqlConnect {
 	ResultSet rs;
 	String url;
 	
+	
 	public sqlConnect() {
 		// TODO Auto-generated constructor stub
 		// a url which indicates server/dbname
@@ -83,9 +84,8 @@ class sqlConnect {
 	public void sendDate()
 	{
 		try {
-			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			String date = format.format(new Date());
-			stmt.executeUpdate("insert into test (name) values('" + date + "');");
+						
+			stmt.executeUpdate("insert into test (name) values('" + networking.getTime() + "');");
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

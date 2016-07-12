@@ -16,6 +16,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class networking {
@@ -37,7 +38,7 @@ public class networking {
 	    	  
 	          // make server socket and open socket at port 5000
 	          serverSocket = new ServerSocket(5000);
-	          System.out.println(getTime() + " Service is ready.");
+	          System.out.println("[" + getTime() + "]" + " Service is ready.");
 	          
 	      } catch (IOException e) {
 	          e.printStackTrace();
@@ -46,12 +47,12 @@ public class networking {
 	      while (true) {
 	          try {
 	        	  
-	              System.out.println(getTime() + " Waiting for responce.");
+	              System.out.println("[" + getTime() + "]" + " Waiting for responce.");
 	              
 	              // Server socket  waits for communication requests
 	              // if client requests communication, server makes socket for communication
 	              Socket socket = serverSocket.accept();
-	              System.out.println(getTime() + socket.getInetAddress() + " Requested response");
+	              System.out.println("[" + getTime() + "]" + socket.getInetAddress() + " Requested response");
 	              
 	              // receive socket's data
 	              InputStream in = socket.getInputStream();
@@ -70,7 +71,7 @@ public class networking {
 	              
 	              System.out.println("Terminating communication.");
 	              
-	              System.out.println(getTime() + " Data Received");
+	              System.out.println("[" + getTime() + "]" + " Data Received");
 	               
 	              // close socket and stream
 	              dis.close();
@@ -83,14 +84,10 @@ public class networking {
 
 		}
 		
-		static String getTime() {
-		      SimpleDateFormat f = new SimpleDateFormat("[hh:mm:ss]");
-		      return f.format(new Date());
-		} // getTime
-
+		
 		public void sockClient(){
 			try{
-				String serverIP = "127.0.0.1"; // 127.0.0.1 & localhost 본인
+				String serverIP = "127.0.0.1"; // 127.0.0.1 & localhost
 		        System.out.println("Trying Communication. Server IP : " + serverIP);
 		         
 		        // make socket and try communication
@@ -104,7 +101,7 @@ public class networking {
 		        System.out.println("Messages from server : " + dis.readUTF());
 		        System.out.println("Terminating communication.");
 		         
-		        // 스트림과 소켓을 닫는다.
+		        // close socket and stream
 		        dis.close();
 		        socket.close();
 		    } catch (ConnectException ce) {
@@ -119,6 +116,20 @@ public class networking {
 		}
 	}
 	
+	public static String getTime() {
+		SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	      return f.format(new Date());
+	} // getTime
+	
+	public static String getDay(){
+		//get information about date
+		Calendar oCalendar = Calendar.getInstance( );
+
+      // 1     2     3     4     5     6     7
+		final String[] week = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+		return week[oCalendar.get(Calendar.DAY_OF_WEEK) - 1];			
+	}
+
 	public static void runServer(){
 		TCPconnection server = new TCPconnection();
 		server.start();
@@ -144,6 +155,7 @@ public class networking {
 	        
 		        System.out.println("Source File not exist ");
 		        return 0;
+		        
 	        }
 	        else
 	        {
@@ -250,5 +262,8 @@ public class networking {
 		return output.toString();
 
 	}
+	
+	
+	
 }
 
