@@ -81,7 +81,7 @@ class sqlConnect {
 	}
 	
 	// send local date to db
-	public void sendDate()
+	public void sendLog()
 	{
 		try {
 						
