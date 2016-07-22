@@ -83,11 +83,8 @@ class sqlConnect {
 	}
 	
 	// send local date to db
-<<<<<<< HEAD
+
 	public void sendLog(boolean success)
-=======
-	public void sendLog()
->>>>>>> 5a028f4d9dc067a57958409712665b7adb117183
 	{
 		
 		try {
