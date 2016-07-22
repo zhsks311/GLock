@@ -21,6 +21,8 @@ import java.util.Date;
 
 public class networking {
 
+	static String serverIP = "218.150.181.86"; // 127.0.0.1 & localhost
+	
 	static class TCPconnection extends Thread {
 
 		static String command;
@@ -87,7 +89,7 @@ public class networking {
 		
 		public void sockClient(){
 			try{
-				String serverIP = "127.0.0.1"; // 127.0.0.1 & localhost
+				
 		        System.out.println("Trying Communication. Server IP : " + serverIP);
 		         
 		        // make socket and try communication
@@ -149,7 +151,7 @@ public class networking {
 	        byte[] buffer;
 	        int maxBufferSize = 1 * 1024 * 1024;
 	        File sourceFile = new File(sourceFileUri);
-	        String server = "http://218.150.181.86:3000";
+	        String portNumber = ":8080";
 	
 	        if (!sourceFile.isFile()) {
 	        
@@ -165,7 +167,8 @@ public class networking {
 		
 		        // open a URL connection to the Servlet
 		        FileInputStream fileInputStream = new FileInputStream(sourceFile);
-		        URL url = new URL(server + "/upload.php");
+		        URL url = new URL(serverIP + portNumber + "/upload.php");
+		        
 		
 		        // Open a HTTP  connection to  the URL
 		        conn = (HttpURLConnection) url.openConnection();

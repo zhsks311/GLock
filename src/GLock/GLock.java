@@ -57,6 +57,11 @@ public class GLock extends JFrame {
 	// counting how many number button pressed
 	int btnPressCnt = 0;
 	
+	/*
+	 * For Linux
+	GpioPinDigitalOutput pin;
+	GpioController gpio;
+	*/
 	boolean linuxFlag = false;
 	private int falseCount = 0;
 	
@@ -239,12 +244,29 @@ public class GLock extends JFrame {
 					// reset the counts that is added when input wrong password
 					falseCount = 0;
 					JOptionPane.showMessageDialog(null, "OPEN");
-				
+					
+					// send log
+					try{
+						sc.connectToMysql();
+						sc.sendLog(true);
+						sc.closeConnection();
+					} catch(Exception ex){
+						ex.printStackTrace();
+					}
 				}else{
 					
 					// increase the counts for password incorrect 
 					falseCount++;
 					JOptionPane.showMessageDialog(null, "Passwords incorrected.");
+					
+					// send log
+					try{
+						sc.connectToMysql();
+						sc.sendLog(false);
+						sc.closeConnection();
+					} catch(Exception ex){
+						ex.printStackTrace();
+					}
 				}
 				
 				if(isSecureTime() || falseCount > 2)
@@ -252,15 +274,13 @@ public class GLock extends JFrame {
 
 					// send a picture
 					if(linuxFlag)
-						networking.uploadFile(imageSrcPath + getId() + "_" + networking.getTime(); + ".jpg");
+						networking.uploadFile(imageSrcPath + getId() + "_" + networking.getTime() + ".jpg");
 				
 					
 				}
 				
 				input="";
-				sc.connectToMysql();
-				sc.sendLog();
-				sc.closeConnection();
+				
 				
 				ShuffleButtons();
 				

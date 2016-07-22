@@ -16,12 +16,14 @@ class sqlConnect {
 	Statement stmt;
 	ResultSet rs;
 	String url;
-	
+	String user_index;
+	String dbId = "root";
+	String dbPwd = "12345678";
 	
 	public sqlConnect() {
 		// TODO Auto-generated constructor stub
 		// a url which indicates server/dbname
-		url = "jdbc:mysql://192.168.0.9:3306/test";
+		url = "jdbc:mysql://218.150.181.86:3306/kanglab_db";
 		con = null;
 		stmt = null;
 		rs = null;
@@ -46,11 +48,12 @@ class sqlConnect {
 		try{
 			
 			System.out.println("try-catch test statement!");
+			
 			// database id and password
-			con = (Connection) DriverManager.getConnection(url,"pi","raspberry");
+			con = (Connection) DriverManager.getConnection(url, dbId, dbPwd);
 			System.out.println("mysql access Successed!!!");
 			stmt = (Statement) con.createStatement();
-		
+			
 			// query test code
 //			
 //			ResultSet rs = stmt.executeQuery("select * from test");
@@ -67,7 +70,6 @@ class sqlConnect {
 		}
 	}
 	
-	
 	public void closeConnection()
 	{
 		try {
@@ -81,11 +83,17 @@ class sqlConnect {
 	}
 	
 	// send local date to db
-	public void sendDate()
+	public void sendLog(boolean success)
 	{
+		
 		try {
-						
-			stmt.executeUpdate("insert into test (name) values('" + networking.getTime() + "');");
+			if(success)
+				stmt.executeUpdate("insert into log (enter_time, access_check, user_index) " 
+						+ "values('" + networking.getTime() + "', 1, '" + user_index + "');");
+			
+			else
+				stmt.executeUpdate("insert into log (enter_time, access_check, user_index) " 
+						+ "values('" + networking.getTime() + "', 0, '" + user_index + "');");
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -94,33 +102,31 @@ class sqlConnect {
 		
 	}
 	
-	
 	// send local ip to db
 	public void sendIp(String id)
 	{
 		
 		try {
 			String localIp = InetAddress.getLocalHost().getHostAddress();
-			stmt.executeUpdate("update user set ip = '" + localIp + "' where userId = '" + id + "';");
+			stmt.executeUpdate("update users set ip_address = '" + localIp + "' where id = '" + id + "';");
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}   
+		}
 		
-	
 	}
+	
 	public void removeIp(String id)
 	{
 		try {
 			
-			stmt.executeUpdate("update user set ip = 'NULL' where userId = '" + id + "';");
+			stmt.executeUpdate("update user set ip_address = 'NULL' where id = '" + id + "';");
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}   
-		
 		
 	}
 	
@@ -128,13 +134,14 @@ class sqlConnect {
 	public boolean isJoinedUser(String id,String pwd){
 		
 		int result = 0;
-		String query = "select count(*) from user where userId ='" + id + "' and userPwd = '" + pwd + "';";
+		String query = "select count(*) from user where id ='" + id + "' and id_password = '" + pwd + "';";
+		String idQuery = "select index_user from user where id = '" + id + "';";
 		try {
 			
 			rs = stmt.executeQuery(query);
 			if(rs.next())
 				result = rs.getInt(1);
-		
+			
 		} catch (SQLException e) {	
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -142,7 +149,23 @@ class sqlConnect {
 		
 		// if id and passwords correct then true
 		if(result>0)
+		{
+			// Get user index
+			try {
+				
+				rs = stmt.executeQuery(idQuery);
+				
+				if(rs.next())
+					user_index = rs.getString(1);
+				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			return true;
+		
+		}
 		
 		// else false
 		return false;
