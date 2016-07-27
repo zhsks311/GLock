@@ -121,7 +121,7 @@ public class GLock extends JFrame {
 		if(!sc.isJoinedUser(getId(), getPwd())){
 			
 			JOptionPane.showMessageDialog(null, "There is no id or password!", "Login Error!",JOptionPane.ERROR_MESSAGE);
-			System.exit(0);
+			//System.exit(0);
 		}
 		
 		// Update ip to command to doorlock
@@ -140,6 +140,7 @@ public class GLock extends JFrame {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				new GLock();
+//				mainFrame mf = new mainFrame();
 			}
 		});
 		
