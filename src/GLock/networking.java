@@ -39,7 +39,7 @@ public class networking {
 	      try {
 	    	  
 	          // make server socket and open socket at port 5000
-	          serverSocket = new ServerSocket(5000);
+	          serverSocket = new ServerSocket(8106);
 	          System.out.println("[" + getTime() + "]" + " Service is ready.");
 	          
 	      } catch (IOException e) {

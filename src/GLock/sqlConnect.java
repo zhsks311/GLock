@@ -17,13 +17,13 @@ class sqlConnect {
 	ResultSet rs;
 	String url;
 	String user_index;
-	String dbId = "root";
-	String dbPwd = "12345678";
+	String dbId = "pi";
+	String dbPwd = "raspberry";
 	
 	public sqlConnect() {
 		// TODO Auto-generated constructor stub
 		// a url which indicates server/dbname
-		url = "jdbc:mysql://218.150.181.86:3306/kanglab_db";
+		url = "jdbc:mysql://218.150.181.86:3306/kanglab_db?useSSL=false";
 		con = null;
 		stmt = null;
 		rs = null;
@@ -88,6 +88,7 @@ class sqlConnect {
 	{
 		
 		try {
+			
 			if(success)
 				stmt.executeUpdate("insert into log (enter_time, access_check, user_index) " 
 						+ "values('" + networking.getTime() + "', 1, '" + user_index + "');");
@@ -108,6 +109,7 @@ class sqlConnect {
 	{
 		
 		try {
+			
 			String localIp = InetAddress.getLocalHost().getHostAddress();
 			stmt.executeUpdate("update users set ip_address = '" + localIp + "' where id = '" + id + "';");
 			
@@ -122,7 +124,7 @@ class sqlConnect {
 	{
 		try {
 			
-			stmt.executeUpdate("update user set ip_address = 'NULL' where id = '" + id + "';");
+			stmt.executeUpdate("update users set ip_address = 'NULL' where id = '" + id + "';");
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -135,8 +137,9 @@ class sqlConnect {
 	public boolean isJoinedUser(String id,String pwd){
 		
 		int result = 0;
-		String query = "select count(*) from user where id ='" + id + "' and id_password = '" + pwd + "';";
+		String query = "select count(*) from users where id ='" + id + "' and id_password = '" + pwd + "';";
 		String idQuery = "select index_user from user where id = '" + id + "';";
+		
 		try {
 			
 			rs = stmt.executeQuery(query);
@@ -147,6 +150,8 @@ class sqlConnect {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		
 		
 		// if id and passwords correct then true
 		if(result>0)

@@ -74,7 +74,7 @@ public class GLock extends JFrame {
 	HashMap<String, Boolean> day = new HashMap<String, Boolean>();
 	int sStartHour = 0;
 	int sEndHour = 0;
-
+		 
 	public GLock() {
 		
 		//networking.sockClient();
@@ -90,7 +90,7 @@ public class GLock extends JFrame {
 		this.add(getCheckButton(), BorderLayout.EAST);
 
 		this.setVisible(true);
-		
+			
 		/*
 		 * For Linux
 		// set Gpio for door control
@@ -112,19 +112,28 @@ public class GLock extends JFrame {
 		// jdbcDriverLoad is needed when we use this program in Linux
 		sc = new sqlConnect();
 		defaultIdSet();
+		
+		
+		sc.jdbcDriverLoad();
 		sc.connectToMysql();
 		
-		//sc.jdbcDriverLoad
 		// if there's no correct user, then exit program
-		if(!sc.isJoinedUser(getId(), getPwd()))
+		if(!sc.isJoinedUser(getId(), getPwd())){
+			
+			JOptionPane.showMessageDialog(null, "There is no id or password!", "Login Error!",JOptionPane.ERROR_MESSAGE);
 			System.exit(0);
+		}
 		
 		// Update ip to command to doorlock
+		
 		sc.sendIp(getId());
 		sc.closeConnection();
 		
 		
 	}
+	
+	
+
 	
 	public static void main(String[] args) {
 		
