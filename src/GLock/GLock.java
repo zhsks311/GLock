@@ -47,8 +47,10 @@ public class GLock extends JFrame {
 	private JPanel Panel;
 	private String input="";
 	private String id;
+	
 	// password is a password for user's id
 	private String password;
+	
 	// lPwd is a password for doorlock
 	private String lPwd;
 	sqlConnect sc;
@@ -110,7 +112,7 @@ public class GLock extends JFrame {
 		
 		// initializing
 		// jdbcDriverLoad is needed when we use this program in Linux
-		sc = new sqlConnect();
+		sc = sqlConnect.getInstance();
 		defaultIdSet();
 		
 		
@@ -118,7 +120,7 @@ public class GLock extends JFrame {
 		sc.connectToMysql();
 		
 		// if there's no correct user, then exit program
-		if(!sc.isJoinedUser(getId(), getPwd())){
+		if(!sc.isJoinedUser()){
 			
 			JOptionPane.showMessageDialog(null, "There is no id or password!", "Login Error!",JOptionPane.ERROR_MESSAGE);
 			//System.exit(0);
@@ -126,7 +128,7 @@ public class GLock extends JFrame {
 		
 		// Update ip to command to doorlock
 		
-		sc.sendIp(getId());
+		sc.sendIp();
 		sc.closeConnection();
 		
 		
@@ -286,12 +288,10 @@ public class GLock extends JFrame {
 					if(linuxFlag)
 						networking.uploadFile(imageSrcPath + getId() + "_" + networking.getTime() + ".jpg");
 				
-					
 				}
 				
 				input="";
-				
-				
+								
 				ShuffleButtons();
 				
 				// btnPressCnt is for timing to take a picture
@@ -390,7 +390,7 @@ public class GLock extends JFrame {
 	
 	public void exitProgram()
 	{
-		sc.removeIp(getId());
+		sc.removeIp();
 		System.exit(0);
 		
 	}

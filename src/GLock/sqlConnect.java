@@ -12,15 +12,22 @@ import com.mysql.jdbc.Statement;
 
 class sqlConnect {
 	
+	private static sqlConnect sc = new sqlConnect(); 
+	
 	Connection con;
 	Statement stmt;
 	ResultSet rs;
 	String url;
-	String user_index;
 	String dbId = "pi";
 	String dbPwd = "raspberry";
 	
-	public sqlConnect() {
+	String user_index;
+	String id;
+	String pwd;
+	
+	
+	
+	private sqlConnect() {
 		// TODO Auto-generated constructor stub
 		// a url which indicates server/dbname
 		url = "jdbc:mysql://218.150.181.86:3306/kanglab_db?useSSL=false";
@@ -29,6 +36,18 @@ class sqlConnect {
 		rs = null;
 	}
 	
+	public static sqlConnect getInstance(){ return sc; }
+	
+	public void setId(String id){
+		this.id = id;
+	}
+	
+	public void setPwd(String pwd){
+		this.pwd = pwd;
+	}
+	
+	public String getId(){ return id; }
+	public String getPwd(){ return pwd; }
 
 	// Need to call this function when compile this program on linux
 	// does not need on windows
@@ -105,7 +124,7 @@ class sqlConnect {
 	}
 	
 	// send local ip to db
-	public void sendIp(String id)
+	public void sendIp()
 	{
 		
 		try {
@@ -120,7 +139,7 @@ class sqlConnect {
 		
 	}
 	
-	public void removeIp(String id)
+	public void removeIp()
 	{
 		try {
 			
@@ -134,7 +153,7 @@ class sqlConnect {
 	}
 	
 	//check user's id and password
-	public boolean isJoinedUser(String id,String pwd){
+	public boolean isJoinedUser(){
 		
 		int result = 0;
 		String query = "select count(*) from users where id ='" + id + "' and id_password = '" + pwd + "';";

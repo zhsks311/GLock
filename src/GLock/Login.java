@@ -7,7 +7,6 @@ import javax.swing.GroupLayout;
 import javax.swing.JPanel;
 
 public class Login extends JPanel{
-	
                  
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
@@ -21,6 +20,7 @@ public class Login extends JPanel{
 	 public Login()  {
 	        initComponents();
 	    }
+	 
 	private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
@@ -54,8 +54,9 @@ public class Login extends JPanel{
 
         jButton1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-            	
-            	
+            		
+            		
+            		
 //                F.changePanel();
             }
         });
@@ -105,6 +106,6 @@ public class Login extends JPanel{
                     .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(29, 29, 29))
         );
-    }// </editor-fold>      
+    } 
 	
 }
