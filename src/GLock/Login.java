@@ -15,14 +15,16 @@ public class Login extends JPanel{
     private javax.swing.JLabel jLabel4;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
-  
+    private mainFrame m;
     
-	 public Login()  {
-	        initComponents();
+	 public Login(mainFrame M)  {
+	        initComponents(M);
 	    }
 	 
-	private void initComponents() {
+	private void initComponents(mainFrame M) {
 
+		m = M;
+		
         jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -55,7 +57,7 @@ public class Login extends JPanel{
         jButton1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
             		
-            		
+            		m.changePanel();
             		
 //                F.changePanel();
             }

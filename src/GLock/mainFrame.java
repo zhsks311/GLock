@@ -13,8 +13,8 @@ public class mainFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
          
-//        getContentPane().add("One", new Login(this));
-//        getContentPane().add("Two", new GLock(this));
+        getContentPane().add("One", new Login(this));
+        getContentPane().add("Two", new GLock());
         
         setVisible(true);
     }

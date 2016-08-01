@@ -113,11 +113,9 @@ public class networking {
 		    } catch (Exception e) {
 		        e.printStackTrace();
 		    } // try - catch
-
-	    
 		}
 	}
-	
+
 	public static String getTime() {
 		SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	      return f.format(new Date());

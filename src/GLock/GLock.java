@@ -141,8 +141,8 @@ public class GLock extends JFrame {
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				new GLock();
-//				mainFrame mf = new mainFrame();
+//				new GLock();
+				mainFrame mf = new mainFrame();
 			}
 		});
 		
