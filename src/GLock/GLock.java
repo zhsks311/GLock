@@ -41,7 +41,7 @@ import com.pi4j.io.gpio.RaspiPin;
 */
 
 
-public class GLock extends JFrame {
+public class GLock extends JPanel {
 
 	private JButton[] buttons;
 	private JPanel Panel;
@@ -83,7 +83,7 @@ public class GLock extends JFrame {
 		networking.runServer();
 		
 		this.setSize(480, 320); 
-		
+		this.setLayout(new BorderLayout());
 		Panel = new JPanel(new GridLayout(3, 4));
 		buttons = getButtons(12);
 		layoutButtons();
