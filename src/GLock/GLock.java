@@ -73,9 +73,7 @@ public class GLock extends JPanel {
 	String date;
 	
 	// variable for secure time
-	HashMap<String, Boolean> day = new HashMap<String, Boolean>();
-	int sStartHour = 0;
-	int sEndHour = 0;
+	SecurityBean sb;
 		 
 	public GLock() {
 		
@@ -99,17 +97,6 @@ public class GLock extends JPanel {
 		setGpio();
 		*/
 		
-		// test initialization
-		// need to get data from server later
-		// and input data to variable
-		day.put("Mon", true);
-		day.put("Tue", true);
-		day.put("Wed", true);
-		day.put("Thu", false);
-		day.put("Fri", false);
-		day.put("Sat", false);
-		day.put("Sun", false);
-		
 		// initializing
 		// jdbcDriverLoad is needed when we use this program in Linux
 		sc = sqlConnect.getInstance();
@@ -119,12 +106,11 @@ public class GLock extends JPanel {
 		sc.jdbcDriverLoad();
 		sc.connectToMysql();
 		
-		// if there's no correct user, then exit program
-		if(!sc.isJoinedUser()){
-			
-			JOptionPane.showMessageDialog(null, "There is no id or password!", "Login Error!",JOptionPane.ERROR_MESSAGE);
-			//System.exit(0);
-		}
+		// initializing variables about security time
+		// need to get data from server later
+		// and input data to variable		
+		sb = new SecurityBean();
+		sb = sc.getSecureDate();
 		
 		// Update ip to command to doorlock
 		
@@ -219,7 +205,7 @@ public class GLock extends JPanel {
 					System.out.println(e.getActionCommand());
 					input = input + e.getActionCommand();
 					
-					if((isSecureTime() || falseCount > 2) && btnPressCnt++ < 1)
+					if(( falseCount > 2 && btnPressCnt++ < 1) || isSecureTime())
 					{
 						if(linuxFlag)
 							takePicture();
@@ -336,21 +322,26 @@ public class GLock extends JPanel {
 	
 	public boolean isSecureTime(){
 		
-		String today = networking.getDay();
+		int today = networking.getDay();
 		
 		// hour - the hour-of-day to represent, from 0 to 23
 		java.time.LocalTime systemTime = java.time.LocalTime.now();
 		int hour = systemTime.getHour(); 
+		
+		
 
-		
-
-		if(day.get(today))
+		if(sb.day.get("" +today)){
+			System.out.println("Not Secure Time");
 			return false;
+		}
 		
-		if(!(sStartHour <= hour && sEndHour > hour))
+		if(!(sb.sStartHour[today] <= hour && sb.sEndHour[today] > hour))
+		{
+			System.out.println("Not Secure Time");
 			return false;
+		}
 		
-		
+		System.out.println("Scure Time");
 		return true;
 	}
 

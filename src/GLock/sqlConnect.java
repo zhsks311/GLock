@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.Statement;
@@ -101,20 +102,73 @@ class sqlConnect {
 			
 	}
 	
-	// send local date to db
+	
+	public SecurityBean getSecureDate()
+	{
+		
+		SecurityBean sb = new SecurityBean();
+		String query = "select * from security_time where id ='" + id + "';";
+		String[] split = null;
+		
+		try {
 
+			rs = stmt.executeQuery(query);
+			
+			if(rs.next()){
+				for(int i = 3; i < 16; i = i + 2) {
+					
+					String startTime = rs.getString(i);
+					String endTime = rs.getString(i);
+	
+					if(startTime.equals("0:0") && endTime.equals("0:0"))
+					{
+						sb.day.put(i/2 + "", false);
+						System.out.println(i/2 + " : false");
+					}
+					else
+					{
+						sb.day.put(i/2 + "", true);
+						System.out.println(i/2 + " : true");
+					}
+					
+					split = startTime.split(":");
+					sb.setsStartHour(Integer.parseInt(split[0]), i/2-1);
+					sb.setsStartMin(Integer.parseInt(split[1]), i/2-1);
+					System.out.println(i/2 + " start Time : " + split[0] + " "+ split[1]);
+					
+
+					split = endTime.split(":");
+					sb.setsEndHour(Integer.parseInt(split[0]),i/2-1); 
+					sb.setsEndMin(Integer.parseInt(split[1]),i/2-1); 
+					System.out.println(i/2 + " end Time : " + split[0] + " "+ split[1]);
+					
+				}
+			}
+			
+			rs.close();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return sb;
+	}
+	
+	
+	// send local date to db
 	public void sendLog(boolean success)
 	{
 		
 		try {
 			
 			if(success)
-				stmt.executeUpdate("insert into log (enter_time, access_check, user_index) " 
-						+ "values('" + networking.getTime() + "', 1, '" + user_index + "');");
+				stmt.executeUpdate("insert into log (access_check, user_index) " 
+						+ "values(1, '" + user_index + "');");
 			
 			else
-				stmt.executeUpdate("insert into log (enter_time, access_check, user_index) " 
-						+ "values('" + networking.getTime() + "', 0, '" + user_index + "');");
+				stmt.executeUpdate("insert into log (access_check, user_index) " 
+						+ "values(0, '" + user_index + "');");
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -157,7 +211,7 @@ class sqlConnect {
 		
 		int result = 0;
 		String query = "select count(*) from users where id ='" + id + "' and id_password = '" + pwd + "';";
-		String idQuery = "select index_user from user where id = '" + id + "';";
+		String idQuery = "select index_user from users where id = '" + id + "';";
 		
 		try {
 			
@@ -195,5 +249,7 @@ class sqlConnect {
 		// else false
 		return false;
 	}
+	
+	
 	
 }// class sqlConnect end;

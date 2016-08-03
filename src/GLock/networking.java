@@ -121,13 +121,14 @@ public class networking {
 	      return f.format(new Date());
 	} // getTime
 	
-	public static String getDay(){
+	public static int getDay(){
 		//get information about date
 		Calendar oCalendar = Calendar.getInstance( );
 
-      // 1     2     3     4     5     6     7
-		final String[] week = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
-		return week[oCalendar.get(Calendar.DAY_OF_WEEK) - 1];			
+//      // 1     2     3     4     5     6     7
+//		final String[] week = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+		
+		return (oCalendar.get(Calendar.DAY_OF_WEEK) - 1);			
 	}
 
 	public static void runServer(){

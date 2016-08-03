@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.GroupLayout;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class Login extends JPanel{
@@ -16,14 +17,19 @@ public class Login extends JPanel{
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private mainFrame m;
+    private sqlConnect sc;
     
 	 public Login(mainFrame M)  {
-	        initComponents(M);
-	    }
+		 
+	     initComponents(M);
+	 }
 	 
 	private void initComponents(mainFrame M) {
 
 		m = M;
+		
+		sc = sqlConnect.getInstance();
+		
 		
         jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -56,12 +62,30 @@ public class Login extends JPanel{
 
         jButton1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-            		
+            	
+            	//get id and try login
+            	sc.connectToMysql();
+            	sc.setId(jTextField1.getText());
+            	sc.setPwd(jTextField2.getText());
+            	System.out.println(jTextField1.getText() + jTextField2.getText());
+            	if(sc.isJoinedUser())
             		m.changePanel();
+            	else
+            		JOptionPane.showMessageDialog(null, "There is no id or password!", "Login Error!",JOptionPane.ERROR_MESSAGE);
+            
             		
 //                F.changePanel();
             }
         });
+        
+        
+        jButton2.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+            
+            		System.exit(ABORT);
+            }
+        });
+        
         
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
