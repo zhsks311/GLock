@@ -322,7 +322,8 @@ public class GLock extends JPanel {
 	
 	public boolean isSecureTime(){
 		
-		int today = networking.getDay();
+		int today = 1;
+		today = networking.getDay();
 		
 		// hour - the hour-of-day to represent, from 0 to 23
 		java.time.LocalTime systemTime = java.time.LocalTime.now();
@@ -330,7 +331,7 @@ public class GLock extends JPanel {
 		
 		
 
-		if(sb.day.get("" +today)){
+		if(sb.day.get(" " +today)){
 			System.out.println("Not Secure Time");
 			return false;
 		}
