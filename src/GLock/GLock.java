@@ -134,6 +134,7 @@ public class GLock extends JPanel {
 		
 	}
 	
+	
 	public void defaultIdSet()
 	{
 		setId("kang");
@@ -330,8 +331,7 @@ public class GLock extends JPanel {
 		int hour = systemTime.getHour(); 
 		
 		
-
-		if(sb.day.get(" " +today)){
+		if(sb.day.get("1")){
 			System.out.println("Not Secure Time");
 			return false;
 		}

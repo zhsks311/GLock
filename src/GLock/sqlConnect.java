@@ -37,7 +37,9 @@ class sqlConnect {
 		rs = null;
 	}
 	
-	public static sqlConnect getInstance(){ return sc; }
+	public static sqlConnect getInstance(){ 
+		sc = new sqlConnect(); 
+		return sc; }
 	
 	public void setId(String id){
 		this.id = id;
@@ -105,16 +107,17 @@ class sqlConnect {
 	
 	public SecurityBean getSecureDate()
 	{
-		
+		System.out.println(id + " id inust");
 		SecurityBean sb = new SecurityBean();
 		String query = "select * from security_time where id ='" + id + "';";
 		String[] split = null;
-		
+		boolean a=false;
 		try {
 
 			rs = stmt.executeQuery(query);
-			
-			if(rs.next()){
+			a = rs.next();
+			System.out.println(a);
+			if(a){
 				for(int i = 3; i < 16; i = i + 2) {
 					
 					String startTime = rs.getString(i);
