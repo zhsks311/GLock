@@ -14,7 +14,7 @@ import com.mysql.jdbc.Statement;
 class sqlConnect {
 	
 	private static sqlConnect sc = new sqlConnect(); 
-	
+	SecurityBean sb = SecurityBean.getInstance();
 	Connection con;
 	Statement stmt;
 	ResultSet rs;
@@ -26,20 +26,25 @@ class sqlConnect {
 	String id;
 	String pwd;
 	
-	
-	
 	private sqlConnect() {
 		// TODO Auto-generated constructor stub
 		// a url which indicates server/dbname
-		url = "jdbc:mysql://218.150.181.86:3306/kanglab_db?useSSL=false";
+		url = "jdbc:mysql://192.168.0.13:3306/kanglab_db?useSSL=false";
 		con = null;
 		stmt = null;
 		rs = null;
 	}
 	
 	public static sqlConnect getInstance(){ 
-		sc = new sqlConnect(); 
-		return sc; }
+		if (sc == null)
+		{
+			// initializing
+			// jdbcDriverLoad is needed when we use this program in Linux
+			sc = new sqlConnect();
+			sc.jdbcDriverLoad();
+		}
+		return sc; 
+	}
 	
 	public void setId(String id){
 		this.id = id;
@@ -108,42 +113,53 @@ class sqlConnect {
 	public SecurityBean getSecureDate()
 	{
 		System.out.println(id + " id inust");
-		SecurityBean sb = new SecurityBean();
+
 		String query = "select * from security_time where id ='" + id + "';";
 		String[] split = null;
 		boolean a=false;
+		int divided_i = 0;
 		try {
 
 			rs = stmt.executeQuery(query);
 			a = rs.next();
 			System.out.println(a);
 			if(a){
+
+				// the variable i is starting from 3
+				// because in my database, fields come index, id, mon_start, mon_end ...
+				// and when I use jtbc, I have to start i from 1
+				// I'll make Sunday 0, Monday 1 ...
 				for(int i = 3; i < 16; i = i + 2) {
 					
+					// if i/2 == 7, it's sunday. but i wanna sunday be 0.
+					// so ~
+					divided_i = i/2 == 7 ? 0 : i/2;
+					
 					String startTime = rs.getString(i);
-					String endTime = rs.getString(i);
-	
+					String endTime = rs.getString(i+1);
+					
 					if(startTime.equals("0:0") && endTime.equals("0:0"))
 					{
-						sb.day.put(i/2 + "", false);
-						System.out.println(i/2 + " : false");
+						sb.day.put(divided_i + "", false);
+						System.out.println(divided_i + " : false");
 					}
 					else
 					{
-						sb.day.put(i/2 + "", true);
-						System.out.println(i/2 + " : true");
+						sb.day.put(divided_i + "", true);
+						System.out.println(divided_i + " : true");
 					}
 					
 					split = startTime.split(":");
-					sb.setsStartHour(Integer.parseInt(split[0]), i/2-1);
-					sb.setsStartMin(Integer.parseInt(split[1]), i/2-1);
-					System.out.println(i/2 + " start Time : " + split[0] + " "+ split[1]);
+					// setsStartHour(value, array index)
+					sb.setsStartHour(Integer.parseInt(split[0]), divided_i);
+					sb.setsStartMin(Integer.parseInt(split[1]), divided_i);
+					System.out.println(divided_i + " start Time : " + split[0] + " "+ split[1]);
 					
 
 					split = endTime.split(":");
-					sb.setsEndHour(Integer.parseInt(split[0]),i/2-1); 
-					sb.setsEndMin(Integer.parseInt(split[1]),i/2-1); 
-					System.out.println(i/2 + " end Time : " + split[0] + " "+ split[1]);
+					sb.setsEndHour(Integer.parseInt(split[0]), divided_i); 
+					sb.setsEndMin(Integer.parseInt(split[1]), divided_i); 
+					System.out.println(divided_i + " end Time : " + split[0] + " "+ split[1]);
 					
 				}
 			}
@@ -166,12 +182,12 @@ class sqlConnect {
 		try {
 			
 			if(success)
-				stmt.executeUpdate("insert into log (access_check, user_index) " 
-						+ "values(1, '" + user_index + "');");
+				stmt.executeUpdate("insert into logs (access_check, id) " 
+						+ "values(1, '" + id + "');");
 			
 			else
-				stmt.executeUpdate("insert into log (access_check, user_index) " 
-						+ "values(0, '" + user_index + "');");
+				stmt.executeUpdate("insert into logs (access_check, id) " 
+						+ "values(0, '" + id + "');");
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -253,6 +269,24 @@ class sqlConnect {
 		return false;
 	}
 	
+	public void getUid()
+	{
+		String query = "select * from uid where id = '" + id + "';";
+	
+		try {
+			
+			rs = stmt.executeQuery(query);
+			while(rs.next())
+			{
+				System.out.println(rs.getString(3));
+				sb.setUid(rs.getString(3), true);
+			}
+		} catch (SQLException e) {	
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
 	
 	
 }// class sqlConnect end;

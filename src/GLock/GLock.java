@@ -43,17 +43,15 @@ import com.pi4j.io.gpio.RaspiPin;
 
 public class GLock extends JPanel {
 
+	private static GLock glock;
+	
 	private JButton[] buttons;
 	private JPanel Panel;
 	private String input="";
-	private String id;
-	
-	// password is a password for user's id
-	private String password;
-	
+
 	// lPwd is a password for doorlock
 	private String lPwd;
-	sqlConnect sc;
+	sqlConnect sc = sqlConnect.getInstance();
 	List<String> disposablePwd = new ArrayList<>();
 	
 	// counting how many number button pressed
@@ -71,15 +69,50 @@ public class GLock extends JPanel {
 	String imageSrcPath = srcPath + "image/";
 
 	String date;
-	
+		
 	// variable for secure time
 	SecurityBean sb;
-		 
-	public GLock() {
+	
+
 		
-		//networking.sockClient();
-		networking.runServer();
+	private GLock() { }
+	
+	
+	public static synchronized GLock getInstance()
+	{		
 		
+		if(glock == null)
+			glock = new GLock();
+		glock.setGUI();
+		return glock;
+		
+	}
+	
+	
+	public void callInitailData()
+	{
+
+		defaultIdSet();
+		
+		sc.jdbcDriverLoad();
+		sc.connectToMysql();
+		
+		// initializing variables about security time
+		// need to get data from server later
+		// and input data to variable		
+		sb = SecurityBean.getInstance();
+		sb = sc.getSecureDate();
+		sc.getUid();
+		
+		// Update ip to command to doorlock
+		
+		sc.sendIp();
+		sc.closeConnection();
+		
+	}
+	
+	public void setGUI()
+	{
 		this.setSize(480, 320); 
 		this.setLayout(new BorderLayout());
 		Panel = new JPanel(new GridLayout(3, 4));
@@ -91,36 +124,7 @@ public class GLock extends JPanel {
 
 		this.setVisible(true);
 			
-		/*
-		 * For Linux
-		// set Gpio for door control
-		setGpio();
-		*/
-		
-		// initializing
-		// jdbcDriverLoad is needed when we use this program in Linux
-		sc = sqlConnect.getInstance();
-		defaultIdSet();
-		
-		
-		sc.jdbcDriverLoad();
-		sc.connectToMysql();
-		
-		// initializing variables about security time
-		// need to get data from server later
-		// and input data to variable		
-		sb = new SecurityBean();
-		sb = sc.getSecureDate();
-		
-		// Update ip to command to doorlock
-		
-		sc.sendIp();
-		sc.closeConnection();
-		
-		
 	}
-	
-	
 
 	
 	public static void main(String[] args) {
@@ -137,30 +141,14 @@ public class GLock extends JPanel {
 	
 	public void defaultIdSet()
 	{
-		setId("kang");
-		setPwd("kang");
 		setLpwd("1234");
-			
-	}
-	
-	
-	public void setId(String i)
-	{
-		id = i;
-	}
-	
-	public void setPwd(String pwd)
-	{
-		password = pwd;
 	}
 	
 	public void setLpwd(String pwd)
 	{
 		lPwd = pwd;
 	}
-	
-	public String getId() { return id; }
-	public String getPwd() { return password; }
+
 	public String getLpwd() { return lPwd; }
 	
 	
@@ -210,7 +198,6 @@ public class GLock extends JPanel {
 					{
 						if(linuxFlag)
 							takePicture();
-
 					}
 
 				}
@@ -273,7 +260,7 @@ public class GLock extends JPanel {
 
 					// send a picture
 					if(linuxFlag)
-						networking.uploadFile(imageSrcPath + getId() + "_" + networking.getTime() + ".jpg");
+						networking.uploadFile(imageSrcPath + sc.getId() + "_" + networking.getTime() + ".jpg");
 				
 				}
 				
@@ -316,8 +303,8 @@ public class GLock extends JPanel {
 	public void takePicture()
 	{
 		date = networking.getTime();
-		System.out.println( imageSrcPath + getId() + "_" + date + ".jpg");
-		networking.executeCommand("raspistill -t 100 -o " + imageSrcPath + getId() + "_" + date + ".jpg");
+		System.out.println( imageSrcPath + sc.getId() + "_" + date + ".jpg");
+		networking.executeCommand("raspistill -t 100 -o " + imageSrcPath + sc.getId() + "_" + date + ".jpg");
 
 	}
 	
@@ -330,22 +317,26 @@ public class GLock extends JPanel {
 		java.time.LocalTime systemTime = java.time.LocalTime.now();
 		int hour = systemTime.getHour(); 
 		
-		
-		if(sb.day.get("1")){
+		// search by key.
+		// if value is false, return false.
+		// first, check a day is security set day. 
+		if(!sb.day.get(today + "")){
 			System.out.println("Not Secure Time");
 			return false;
 		}
 		
+		// if set day, check time.
 		if(!(sb.sStartHour[today] <= hour && sb.sEndHour[today] > hour))
 		{
 			System.out.println("Not Secure Time");
 			return false;
 		}
 		
-		System.out.println("Scure Time");
+		// else it's secured time
+		System.out.println("Secure Time");
 		return true;
 	}
-
+	
 	
 /*
  * For Linux

@@ -15,14 +15,16 @@ import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
+import java.security.GeneralSecurityException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 
 public class networking {
 
 	static String serverIP = "218.150.181.86"; // 127.0.0.1 & localhost
-	
+
 	static class TCPconnection extends Thread {
 
 		static String command;
@@ -36,53 +38,49 @@ public class networking {
 		public static void sockServer(){
 		
 		  ServerSocket serverSocket = null;
+		  	  
+		  Socket socket = null;
 	      try {
 	    	  
 	          // make server socket and open socket at port 5000
 	          serverSocket = new ServerSocket(8106);
 	          System.out.println("[" + getTime() + "]" + " Service is ready.");
-	          
+	         
 	      } catch (IOException e) {
 	          e.printStackTrace();
 	      } // try - catch
 	      
-	      while (true) {
+	      
 	          try {
-	        	  
-	              System.out.println("[" + getTime() + "]" + " Waiting for responce.");
-	              
-	              // Server socket  waits for communication requests
-	              // if client requests communication, server makes socket for communication
-	              Socket socket = serverSocket.accept();
-	              System.out.println("[" + getTime() + "]" + socket.getInetAddress() + " Requested response");
-	              
-	              // receive socket's data
-	              InputStream in = socket.getInputStream();
-	              DataInputStream dis = new DataInputStream(in);  // sub stream
-	              
-	              command = dis.readUTF();
-	              
-	              // print data from socket
-	              System.out.println("Messages from client : " + command);
-	              
-	              /*
-	               * For Linux
-	              if(command.equals("open"))
-	            	  GLock.openDoor();
-	              */
-	              
-	              System.out.println("Terminating communication.");
-	              
-	              System.out.println("[" + getTime() + "]" + " Data Received");
-	               
-	              // close socket and stream
-	              dis.close();
-	              socket.close();
-	          } catch (IOException e) {
-	              e.printStackTrace();
-	          } // try - catch
-	          
-	      } // while
+	        	  while(true){
+		              // Server socket  waits for communication requests
+		              // if client requests communication, server makes socket for communication
+		              socket = serverSocket.accept();
+		              System.out.println("[" + getTime() + "]" + socket.getInetAddress() + " Requested response");
+		              
+	//	              // receive socket's data
+	//	              InputStream in = socket.getInputStream();
+	//	              DataInputStream dis = new DataInputStream(in);  // sub stream
+	//	              
+	//	              command = dis.readUTF();
+		              
+		              // changed code from the upper to this
+		              // because the upper can't read data from Linux C
+		              Listener listener = new Listener(socket);
+		              listener.start();
+	        	  }
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        } // try - catch
+	          // close socket and stream
+//              dis.close();
+            try {
+				socket.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 
 		}
 		
@@ -114,6 +112,64 @@ public class networking {
 		        e.printStackTrace();
 		    } // try - catch
 		}
+		
+		static class Listener extends  Thread{
+	        protected  Socket  socket;
+	        String  command=null;      //서버로부터  읽어온  문자열  저장      
+	        SecurityBean sb = SecurityBean.getInstance();	
+	        public  Listener(Socket  socket)  {
+	                this.socket  =  socket;  
+	        }
+
+	        public  void  run()  {
+	                try  {
+
+	                        BufferedReader  reader  =  new  BufferedReader(new  InputStreamReader(socket.getInputStream()));
+
+	                        while ( (command = reader.readLine()) != null){
+	          	              
+	          	              // print data from socket
+	          	              System.out.println("Messages from client : " + command);
+	          	              String[] splitter = new String[2];
+	          	              splitter = command.split("\\.", -1);
+	          	              if(splitter.length > 1){
+	          	            	  System.out.println(splitter.length);
+	          		              System.out.println(splitter[1]);
+	          		             
+	          		              /*
+	          		               * For Linux
+	          		              if(command.equals("openDoor"))
+	          		            	  GLock.openDoor();
+	          		              	              
+	          		              if(command.contains("uidFromRaspberry"))
+	          		              {
+	          		            	  if(sb.getUid(splitter[1]))
+	          							GLock.openDoor();
+	          					  }
+	          		              */
+	          		              if(command.contains("uidFromRaspberry"))
+	          		              {
+	          		            	  if(sb.getUid(splitter[1]))
+	          		            	  	System.out.println("키받았다!!!!!");
+	          		            	  else 
+	          		            		  System.out.println("키 틀렷다!!!!");
+	          					  }
+	          		              
+	          		              System.out.println("Terminating communication.");
+	          		              System.out.println("[" + getTime() + "]" + " Data Received");
+	          	              }//if - length
+	          	            } // while   
+
+	                }  catch(IOException  ignored)  {}  
+	                finally  {
+	                        try  {
+	                                socket.close();
+	                        }  catch(IOException  ignored)  {}
+	                }
+	        }
+
+	}
+		
 	}
 
 	public static String getTime() {
@@ -128,6 +184,7 @@ public class networking {
 //      // 1     2     3     4     5     6     7
 //		final String[] week = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
 		
+		// 0 = sun, because variable - 1
 		return (oCalendar.get(Calendar.DAY_OF_WEEK) - 1);			
 	}
 

@@ -6,7 +6,7 @@ import javax.swing.JFrame;
 public class mainFrame extends JFrame {
 	
 	private CardLayout cards = new CardLayout();
-	
+	private GLock glock = GLock.getInstance();
     public mainFrame() {
     	this.setSize(480, 320); 
         getContentPane().setLayout(cards);
@@ -14,7 +14,7 @@ public class mainFrame extends JFrame {
         setResizable(false);
          
         getContentPane().add("One", new Login(this));
-        getContentPane().add("Two", new GLock());
+        getContentPane().add("Two", glock);
         
         setVisible(true);
     }

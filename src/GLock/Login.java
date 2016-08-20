@@ -18,18 +18,19 @@ public class Login extends JPanel{
     private javax.swing.JTextField jTextField2;
     private mainFrame m;
     private sqlConnect sc;
+    private GLock glock = GLock.getInstance();
     
 	 public Login(mainFrame M)  {
 		 
 	     initComponents(M);
 	 }
 	 
+	 
 	private void initComponents(mainFrame M) {
 
 		m = M;
 		
 		sc = sqlConnect.getInstance();
-		
 		
         jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -63,16 +64,35 @@ public class Login extends JPanel{
         jButton1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
             	
+
+        		
+        		/*
+        		 * For Linux
+        		// set Gpio for door control
+        		glock.setGpio();
+        		*/
+        		
+            	
             	//get id and try login
             	sc.connectToMysql();
             	sc.setId(jTextField1.getText());
             	sc.setPwd(jTextField2.getText());
             	System.out.println(jTextField1.getText() + jTextField2.getText());
             	if(sc.isJoinedUser())
+            	{
+            		
+            		sc.closeConnection();
+            		glock.callInitailData();
+
+            		//networking.sockClient();
+            		networking.runServer();
             		m.changePanel();
-            	else
+            		            		
+            	}
+            	else{
+            		sc.closeConnection();
             		JOptionPane.showMessageDialog(null, "There is no id or password!", "Login Error!",JOptionPane.ERROR_MESSAGE);
-            
+            	}
             		
 //                F.changePanel();
             }
