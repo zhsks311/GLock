@@ -312,5 +312,21 @@ class sqlConnect {
 
 	}
 	
+
+	public void removeDisposablePwd(String pwd)
+	{
+		String query = "delete from temp_pw where temp_password = '" + pwd + "';";
+	
+		try {
+			
+			stmt.executeUpdate(query);
+			
+		} catch (SQLException e) {	
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	
 	
 }// class sqlConnect end;

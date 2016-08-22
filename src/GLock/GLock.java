@@ -229,11 +229,6 @@ public class GLock extends JPanel {
 					 * openDoor();
 					 */
 
-					if(isTempPwd)
-					{
-						int tempPwdIndex = sb.findTempPwdIndex(input);
-						sb.removeTempPwd(tempPwdIndex);	
-					}
 					
 					// reset the counts that is added when input wrong password
 					falseCount = 0;
@@ -242,6 +237,13 @@ public class GLock extends JPanel {
 					// send log
 					try{
 						sc.connectToMysql();
+						if(isTempPwd)
+						{
+							int tempPwdIndex = sb.findTempPwdIndex(input);
+							sb.removeTempPwd(tempPwdIndex);	
+							sc.removeDisposablePwd(input);
+						}
+						
 						sc.sendLog(true);
 						sc.closeConnection();
 					} catch(Exception ex){
