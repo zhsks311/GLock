@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -25,7 +26,7 @@ public class networking {
 
 	static String serverIP = "218.150.181.86"; // 127.0.0.1 & localhost
 
-	static class TCPconnection extends Thread {
+	static class TCPServer extends Thread {
 
 		static String command;
 		
@@ -58,16 +59,10 @@ public class networking {
 		              socket = serverSocket.accept();
 		              System.out.println("[" + getTime() + "]" + socket.getInetAddress() + " Requested response");
 		              
-	//	              // receive socket's data
-	//	              InputStream in = socket.getInputStream();
-	//	              DataInputStream dis = new DataInputStream(in);  // sub stream
-	//	              
-	//	              command = dis.readUTF();
-		              
-		              // changed code from the upper to this
-		              // because the upper can't read data from Linux C
+		              // Start thread for listen to client messages
 		              Listener listener = new Listener(socket);
 		              listener.start();
+		              
 	        	  }
 	        } catch (IOException e) {
 	            e.printStackTrace();
@@ -81,84 +76,64 @@ public class networking {
 				e.printStackTrace();
 			}
 
-
 		}
-		
-		
-		public void sockClient(){
-			try{
 				
-		        System.out.println("Trying Communication. Server IP : " + serverIP);
-		         
-		        // make socket and try communication
-		        Socket socket = new Socket(serverIP, 5000);
-		         
-		        // receiving socket's inputstream
-		        InputStream in = socket.getInputStream();
-		        DataInputStream dis = new DataInputStream(in);  // sub stream
-		         
-		        // print data from socket
-		        System.out.println("Messages from server : " + dis.readUTF());
-		        System.out.println("Terminating communication.");
-		         
-		        // close socket and stream
-		        dis.close();
-		        socket.close();
-		    } catch (ConnectException ce) {
-		        ce.printStackTrace();
-		    } catch (IOException ie) {
-		        ie.printStackTrace();
-		    } catch (Exception e) {
-		        e.printStackTrace();
-		    } // try - catch
-		}
-		
 		static class Listener extends  Thread{
 	        protected  Socket  socket;
 	        String  command=null;      //서버로부터  읽어온  문자열  저장      
 	        SecurityBean sb = SecurityBean.getInstance();	
-	        public  Listener(Socket  socket)  {
+	        
+	        public  Listener(Socket  socket)  
+	        {
 	                this.socket  =  socket;  
 	        }
 
 	        public  void  run()  {
-	                try  {
+	        	try  {
+	        		//// receive socket's data
+	        		//	InputStream in = socket.getInputStream();
+	        		//	DataInputStream dis = new DataInputStream(in);  // sub stream
+	        		//	              
+	        		//  command = dis.readUTF();
+	                		              
+	        		// changed code from the upper to this
+	        		// because the upper can't read data from Linux C
+	        		BufferedReader  reader  =  new  BufferedReader(new  InputStreamReader(socket.getInputStream()));
 
-	                        BufferedReader  reader  =  new  BufferedReader(new  InputStreamReader(socket.getInputStream()));
-
-	                        while ( (command = reader.readLine()) != null){
-	          	              
-	          	              // print data from socket
-	          	              System.out.println("Messages from client : " + command);
-	          	              String[] splitter = new String[2];
-	          	              splitter = command.split("\\.", -1);
-	          	              if(splitter.length > 1){
-	          	            	  System.out.println(splitter.length);
-	          		              System.out.println(splitter[1]);
-	          		             
-	          		              /*
-	          		               * For Linux
-	          		              if(command.equals("openDoor"))
-	          		            	  GLock.openDoor();
-	          		              	              
-	          		              if(command.contains("uidFromRaspberry"))
-	          		              {
-	          		            	  if(sb.getUid(splitter[1]))
-	          							GLock.openDoor();
-	          					  }
-	          		              */
-	          		              if(command.contains("uidFromRaspberry"))
-	          		              {
-	          		            	  if(sb.getUid(splitter[1]))
-	          		            	  	System.out.println("키받았다!!!!!");
-	          		            	  else 
-	          		            		  System.out.println("키 틀렷다!!!!");
-	          					  }
-	          		              
-	          		              System.out.println("Terminating communication.");
-	          		              System.out.println("[" + getTime() + "]" + " Data Received");
-	          	              }//if - length
-	          	            } // while   
+	        		while ( (command = reader.readLine()) != null){
+		          	              
+		        			// print data from socket
+		        		System.out.println("Messages from client : " + command);
+		        		String[] splitter = new String[2];
+		        		splitter = command.split("\\.", -1);
+		        		if(splitter.length > 1){
+		          	            	  
+		          	        System.out.println(splitter.length);
+		          		    System.out.println(splitter[1]);
+		          		             
+		          		    /*
+		          		    * For Linux
+		          		    if(command.equals("openDoor"))
+		          		    	GLock.openDoor();
+		          		              	              
+		          		    if(command.contains("uidFromRaspberry"))
+		          		    {
+		          		    	if(sb.getUid(splitter[1]))
+		          				GLock.openDoor();
+							}
+		          		    */
+		          		    if(command.contains("uidFromRaspberry"))
+		          		    {
+		          		    	if(sb.getUid(splitter[1]))
+		          		    		System.out.println("키받았다!!!!!");
+		          		        else 
+		          		        	System.out.println("키 틀렷다!!!!");
+		          		    }
+		          		              
+		          		    System.out.println("Terminating communication.");
+		          		    System.out.println("[" + getTime() + "]" + " Data Received");
+	          	        }//if - length
+	        		} // while   
 
 	                }  catch(IOException  ignored)  {}  
 	                finally  {
@@ -168,9 +143,53 @@ public class networking {
 	                }
 	        }
 
-	}
+		}
 		
-	}
+	}//server
+	
+	static class HeartBeat extends Thread {
+
+		public void run(){
+			sockClient();
+		}
+		
+		public void sockClient(){
+			while(true)
+			{
+				try{
+					String localIp = InetAddress.getLocalHost().getHostAddress();
+			        System.out.println("Trying Communication. Server IP : " + serverIP);
+			        // make socket and try communication
+			        Socket socket = new Socket(serverIP, 8107);
+			         
+			        // receiving socket's inputstream
+			        OutputStream out = socket.getOutputStream();
+			        DataOutputStream dos = new DataOutputStream(out);  // sub stream
+			        
+			        // write local ip to server
+			        dos.writeUTF(localIp);
+			        
+			        System.out.println("HeartBeat successed, and terminating communication.");
+			         
+			        // close socket and stream
+			        dos.close();
+			        socket.close();
+			        
+			        // code for wait 9 seconds
+			        Thread.sleep(9000);
+			        
+			    } catch (ConnectException ce) {
+			        ce.printStackTrace();
+			    } catch (IOException ie) {
+			        ie.printStackTrace();
+			    } catch (Exception e) {
+			        e.printStackTrace();
+			    } // try - catch
+				
+			}
+		}
+
+	}//heartbeat
 
 	public static String getTime() {
 		SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -189,9 +208,13 @@ public class networking {
 	}
 
 	public static void runServer(){
-		TCPconnection server = new TCPconnection();
+		TCPServer server = new TCPServer();
 		server.start();
-		
+	}
+	
+	public static void runHeartBeat(){
+		HeartBeat heartbeat = new HeartBeat();
+		heartbeat.start();
 	}
 	
 	public static int uploadFile(String sourceFileUri) {
@@ -207,7 +230,7 @@ public class networking {
 	        byte[] buffer;
 	        int maxBufferSize = 1 * 1024 * 1024;
 	        File sourceFile = new File(sourceFileUri);
-	        String portNumber = ":8080";
+	        String portNumber = ":80";
 	
 	        if (!sourceFile.isFile()) {
 	        
@@ -223,7 +246,7 @@ public class networking {
 		
 		        // open a URL connection to the Servlet
 		        FileInputStream fileInputStream = new FileInputStream(sourceFile);
-		        URL url = new URL(serverIP + portNumber + "/upload.php");
+		        URL url = new URL("http://" + serverIP + portNumber + "/glock/upload.php");
 		        
 		
 		        // Open a HTTP  connection to  the URL

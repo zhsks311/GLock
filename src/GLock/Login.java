@@ -86,6 +86,9 @@ public class Login extends JPanel{
 
             		//networking.sockClient();
             		networking.runServer();
+            		//run heartbeat
+            		networking.runHeartBeat();
+            		
             		m.changePanel();
             		            		
             	}

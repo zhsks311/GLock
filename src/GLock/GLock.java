@@ -193,7 +193,7 @@ public class GLock extends JPanel {
 					// pressed");
 					System.out.println(e.getActionCommand());
 					input = input + e.getActionCommand();
-					
+//					networking.uploadFile("C:\\df.jpg");
 					if(( falseCount > 2 && btnPressCnt++ < 1) || isSecureTime())
 					{
 						if(linuxFlag)
