@@ -102,9 +102,10 @@ public class GLock extends JPanel {
 		// and input data to variable		
 		sb = SecurityBean.getInstance();
 		sb = sc.getSecureDate();
+		sc.getDisposablePwd();
 		sc.getUid();
 		
-		// Update ip to command to doorlock
+		// Update ip to command to doohttps://www.youtube.com/watch?v=dET0YZCp-xYrlock
 		
 		sc.sendIp();
 		sc.closeConnection();
@@ -113,6 +114,7 @@ public class GLock extends JPanel {
 	
 	public void setGUI()
 	{
+		
 		this.setSize(480, 320); 
 		this.setLayout(new BorderLayout());
 		Panel = new JPanel(new GridLayout(3, 4));
@@ -218,14 +220,20 @@ public class GLock extends JPanel {
 
 		check.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				System.out.print("\n"+input);
-				if(input.equals(lPwd)){
+				Boolean isTempPwd = sb.isValidTempPwd(input);
+				System.out.println("\n"+input);
+				if(input.equals(lPwd) || isTempPwd){
 					
 					/*
 					 * For Linux
 					 * openDoor();
 					 */
+
+					if(isTempPwd)
+					{
+						int tempPwdIndex = sb.findTempPwdIndex(input);
+						sb.removeTempPwd(tempPwdIndex);	
+					}
 					
 					// reset the counts that is added when input wrong password
 					falseCount = 0;
@@ -239,6 +247,7 @@ public class GLock extends JPanel {
 					} catch(Exception ex){
 						ex.printStackTrace();
 					}
+					
 				}else{
 					
 					// increase the counts for password incorrect 
@@ -299,7 +308,7 @@ public class GLock extends JPanel {
 		return false;
 		
 	}
-	
+
 	public void takePicture()
 	{
 		date = networking.getTime();

@@ -276,11 +276,35 @@ class sqlConnect {
 		try {
 			
 			rs = stmt.executeQuery(query);
+			
 			while(rs.next())
 			{
 				System.out.println(rs.getString(3));
 				sb.setUid(rs.getString(3), true);
 			}
+			
+		} catch (SQLException e) {	
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	
+
+	public void getDisposablePwd()
+	{
+		String query = "select * from temp_pw where id = '" + id + "';";
+	
+		try {
+			
+			rs = stmt.executeQuery(query);
+			
+			while(rs.next())
+			{
+				System.out.println(rs.getString(3));
+				sb.tempPwd.add(rs.getString(3));
+			}
+			
 		} catch (SQLException e) {	
 			// TODO Auto-generated catch block
 			e.printStackTrace();

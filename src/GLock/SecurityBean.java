@@ -1,5 +1,6 @@
 package GLock;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class SecurityBean {
@@ -15,7 +16,12 @@ public class SecurityBean {
 	
 	// a variable for uid check 
 	HashMap<String, Boolean> uid = new HashMap<String, Boolean>();
+	
+	// a variable for disposable password
+	ArrayList<String> tempPwd = new ArrayList<String>();
+	
 
+	
 	public SecurityBean()
 	{
 		
@@ -36,6 +42,30 @@ public class SecurityBean {
 		return uid.get(key) == null ? false : true;
 	}
 
+	public ArrayList<String> getTempPwd() {
+		return tempPwd;
+	}
+
+	public void setTempPwd(ArrayList<String> tempPwd) {
+		this.tempPwd = tempPwd;
+	}
+
+	
+	public Boolean isValidTempPwd(String key)
+	{
+		return sb.tempPwd.contains(key);
+	}
+	
+	public int findTempPwdIndex(String key)
+	{
+		return tempPwd.indexOf(key);
+	}
+	
+	public void removeTempPwd(int index)
+	{
+		tempPwd.remove(index);
+	}
+	
 	public void setUid(String value, Boolean check) {
 		System.out.println(value + ", " + check);
 		uid.put(value, check);
