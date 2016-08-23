@@ -40,25 +40,25 @@ public class Login extends JPanel{
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
 
-        jLabel1.setFont(new java.awt.Font("±º∏≤", 1, 24)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Sans-Serif", 1, 24)); // NOI18N
         jLabel1.setText("GLock Login");
 
-        jLabel3.setFont(new java.awt.Font("πŸ≈¡", 0, 18)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Sans-Serif", 0, 18)); // NOI18N
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel3.setText("Password :");
 
-        jLabel4.setFont(new java.awt.Font("πŸ≈¡", 0, 18)); // NOI18N
+        jLabel4.setFont(new java.awt.Font("Sans-Serif", 0, 18)); // NOI18N
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel4.setText("ID :");
 
-        jTextField1.setFont(new java.awt.Font("±º∏≤", 0, 18)); // NOI18N
+        jTextField1.setFont(new java.awt.Font("Sans-Serif", 0, 18)); // NOI18N
 
-        jTextField2.setFont(new java.awt.Font("±º∏≤", 0, 18)); // NOI18N
+        jTextField2.setFont(new java.awt.Font("Sans-Serif", 0, 18)); // NOI18N
 
-        jButton1.setFont(new java.awt.Font("±º∏≤", 0, 14)); // NOI18N
+        jButton1.setFont(new java.awt.Font("Sans-Serif", 0, 14)); // NOI18N
         jButton1.setText("Sign in");
 
-        jButton2.setFont(new java.awt.Font("±º∏≤", 0, 14)); // NOI18N
+        jButton2.setFont(new java.awt.Font("Sans-Serif", 0, 14)); // NOI18N
         jButton2.setText("Quit");
 
         jButton1.addActionListener(new ActionListener() {
