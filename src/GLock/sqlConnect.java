@@ -202,8 +202,9 @@ class sqlConnect {
 		
 		try {
 			
-			String localIp = InetAddress.getLocalHost().getHostAddress();
+			String localIp = networking.getLocalServerIp();
 			stmt.executeUpdate("update users set ip_address = '" + localIp + "' where id = '" + id + "';");
+			System.out.println(localIp);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

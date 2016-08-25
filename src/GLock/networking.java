@@ -13,6 +13,7 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
@@ -20,6 +21,7 @@ import java.security.GeneralSecurityException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 
 public class networking {
@@ -80,7 +82,7 @@ public class networking {
 				
 		static class Listener extends  Thread{
 	        protected  Socket  socket;
-	        String  command=null;      //서버로부터  읽어온  문자열  저장      
+	        String  command=null;        
 	        SecurityBean sb = SecurityBean.getInstance();	
 	        
 	        public  Listener(Socket  socket)  
@@ -122,14 +124,7 @@ public class networking {
 		          				GLock.openDoor();
 							}
 		          		    */
-		          		    if(command.contains("uidFromRaspberry"))
-		          		    {
-		          		    	if(sb.getUid(splitter[1]))
-		          		    		System.out.println("키받았다!!!!!");
-		          		        else 
-		          		        	System.out.println("키 틀렷다!!!!");
-		          		    }
-		          		              
+		          		   
 		          		    System.out.println("Terminating communication.");
 		          		    System.out.println("[" + getTime() + "]" + " Data Received");
 	          	        }//if - length
@@ -345,7 +340,26 @@ public class networking {
 
 	}
 	
-	
+	public static String getLocalServerIp()
+	{
+		try
+		{
+		    for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();)
+		    {
+		        NetworkInterface intf = en.nextElement();
+		        for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();)
+		        {
+		            InetAddress inetAddress = enumIpAddr.nextElement();
+		            if (!inetAddress.isLoopbackAddress() && !inetAddress.isLinkLocalAddress() && inetAddress.isSiteLocalAddress())
+		            {
+		            	return inetAddress.getHostAddress().toString();
+		            }
+		        }
+		    }
+		}
+		catch (Exception ex) {}
+		return null;
+	}
 	
 }
 

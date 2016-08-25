@@ -59,8 +59,8 @@ public class GLock extends JPanel {
 	
 	/*
 	 * For Linux
-	GpioPinDigitalOutput pin;
-	GpioController gpio;
+	static GpioPinDigitalOutput pin;
+	static GpioController gpio;
 	*/
 	boolean linuxFlag = false;
 	private int falseCount = 0;
@@ -104,8 +104,6 @@ public class GLock extends JPanel {
 		sb = sc.getSecureDate();
 		sc.getDisposablePwd();
 		sc.getUid();
-		
-		// Update ip to command to doohttps://www.youtube.com/watch?v=dET0YZCp-xYrlock
 		
 		sc.sendIp();
 		sc.closeConnection();
@@ -363,7 +361,7 @@ public class GLock extends JPanel {
 	        pin.setShutdownOptions(true, PinState.HIGH);
 	}
 
-	public void openDoor()
+	static public void openDoor()
 	{
 
 		// gpio low
