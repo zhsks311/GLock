@@ -6,8 +6,12 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -29,9 +33,9 @@ import javax.swing.text.SimpleAttributeSet;
 
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.Statement;
+import GLock.networking.TCPServer.Listener;
 
-/*
- * For Linux
+/* For Linux
 //pi4j
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
@@ -39,7 +43,6 @@ import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 */
-
 
 public class GLock extends JPanel {
 
@@ -56,13 +59,13 @@ public class GLock extends JPanel {
 	
 	// counting how many number button pressed
 	int btnPressCnt = 0;
-	
-	/*
-	 * For Linux
-	static GpioPinDigitalOutput pin;
-	static GpioController gpio;
-	*/
-	boolean linuxFlag = false;
+
+	/* For Linux
+	GpioPinDigitalOutput pin;
+	GpioPinDigitalOutput pin2;
+	GpioController gpio;
+	 */
+	boolean linuxFlag = true;
 	private int falseCount = 0;
 	
 	String srcPath = "/home/pi/project/";
@@ -73,17 +76,16 @@ public class GLock extends JPanel {
 	// variable for secure time
 	SecurityBean sb;
 	
-
-		
 	private GLock() { }
 	
 	
 	public static synchronized GLock getInstance()
 	{		
 		
-		if(glock == null)
+		if(glock == null){
 			glock = new GLock();
-		glock.setGUI();
+			glock.setGUI();
+		}
 		return glock;
 		
 	}
@@ -93,7 +95,9 @@ public class GLock extends JPanel {
 	{
 
 		defaultIdSet();
-		
+		/* For Linux
+		setGpio();
+		*/
 		sc.jdbcDriverLoad();
 		sc.connectToMysql();
 		
@@ -104,6 +108,8 @@ public class GLock extends JPanel {
 		sb = sc.getSecureDate();
 		sc.getDisposablePwd();
 		sc.getUid();
+		
+		// Update ip to command to doohttps://www.youtube.com/watch?v=dET0YZCp-xYrlock
 		
 		sc.sendIp();
 		sc.closeConnection();
@@ -193,13 +199,19 @@ public class GLock extends JPanel {
 					// pressed");
 					System.out.println(e.getActionCommand());
 					input = input + e.getActionCommand();
-//					networking.uploadFile("C:\\df.jpg");
-					if(( falseCount > 2 && btnPressCnt++ < 1) || isSecureTime())
+					
+					if(( falseCount > 2 && btnPressCnt < 1) || (isSecureTime()&& btnPressCnt < 1))
 					{
+						/* For Linux
 						if(linuxFlag)
-							takePicture();
-					}
-
+						{
+							Picture p = new Picture();
+							p.start();
+							
+						}
+						*/
+					} 
+					btnPressCnt++;
 				}
 			});
 			buttons[i] = button;
@@ -218,73 +230,86 @@ public class GLock extends JPanel {
 
 		check.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Boolean isTempPwd = sb.isValidTempPwd(input);
+				
 				System.out.println("\n"+input);
-				if(input.equals(lPwd) || isTempPwd){
-					
-					/*
-					 * For Linux
-					 * openDoor();
-					 */
-
-					
-					// reset the counts that is added when input wrong password
-					falseCount = 0;
-					JOptionPane.showMessageDialog(null, "OPEN");
-					
-					// send log
-					try{
-						sc.connectToMysql();
-						if(isTempPwd)
-						{
-							int tempPwdIndex = sb.findTempPwdIndex(input);
-							sb.removeTempPwd(tempPwdIndex);	
-							sc.removeDisposablePwd(input);
-						}
-						
-						sc.sendLog(true);
-						sc.closeConnection();
-					} catch(Exception ex){
-						ex.printStackTrace();
-					}
-					
-				}else{
-					
-					// increase the counts for password incorrect 
-					falseCount++;
-					JOptionPane.showMessageDialog(null, "Passwords incorrected.");
-					
-					// send log
-					try{
-						sc.connectToMysql();
-						sc.sendLog(false);
-						sc.closeConnection();
-					} catch(Exception ex){
-						ex.printStackTrace();
-					}
-				}
-				
-				if(isSecureTime() || falseCount > 2)
-				{
-
-					// send a picture
-					if(linuxFlag)
-						networking.uploadFile(imageSrcPath + sc.getId() + "_" + networking.getTime() + ".jpg");
-				
-				}
-				
-				input="";
-								
 				ShuffleButtons();
 				
-				// btnPressCnt is for timing to take a picture
-				// it is used to check
-				// Does number button be pressed first
-				btnPressCnt=0;
+				if(input.equals(lPwd) || sb.isValidTempPwd(input))
+					procDoor(true);
+				else
+					procDoor(false);
+				
 				
 			}
 		});
 		return check;
+	}
+	
+	public void procDoor(Boolean truth)
+	{
+		Boolean isTempPwd = sb.isValidTempPwd(input);
+		if(truth){
+			
+		/* For Linux
+			  openDoor();
+		 */
+			JOptionPane.showMessageDialog(null, "OPEN");
+			
+			// reset the counts that is added when input wrong password
+			falseCount = 0;
+			
+			// send log
+			try{
+				sc.connectToMysql();
+				if(isTempPwd)
+				{
+					int tempPwdIndex = sb.findTempPwdIndex(input);
+					sb.removeTempPwd(tempPwdIndex);	
+					sc.removeDisposablePwd(input);
+				}
+				
+				sc.sendLog(true);
+				sc.closeConnection();
+			} catch(Exception ex){
+				ex.printStackTrace();
+			}
+			
+		}else{
+			
+			// increase the counts for password incorrect 
+			falseCount++;
+			JOptionPane.showMessageDialog(null, "Passwords incorrected.");
+			
+			// send log
+			try{
+				sc.connectToMysql();
+				sc.sendLog(false);
+				sc.closeConnection();
+			} catch(Exception ex){
+				ex.printStackTrace();
+			}
+		}
+		
+		// if three times password wrong or the time is on secured time, 
+		// call push
+		if(falseCount > 2 || isSecureTime())
+		{
+			networking.callPush(sc.getId());
+		}
+		
+		
+		System.out.println("false count : " + falseCount);
+		
+		
+		
+		input="";
+		
+		// btnPressCnt is for timing to take a picture
+		// it is used to check
+		// Does number button be pressed first
+		btnPressCnt = 0;
+		
+		
 	}
 
 	// make disposable password for friend
@@ -309,14 +334,6 @@ public class GLock extends JPanel {
 		
 	}
 
-	public void takePicture()
-	{
-		date = networking.getTime();
-		System.out.println( imageSrcPath + sc.getId() + "_" + date + ".jpg");
-		networking.executeCommand("raspistill -t 100 -o " + imageSrcPath + sc.getId() + "_" + date + ".jpg");
-
-	}
-	
 	public boolean isSecureTime(){
 		
 		int today = 1;
@@ -346,9 +363,8 @@ public class GLock extends JPanel {
 		return true;
 	}
 	
-	
-/*
- * For Linux
+	/*For Linux
+
 	public void setGpio()
 	{
 		// create gpio controller
@@ -356,12 +372,12 @@ public class GLock extends JPanel {
 
 		//provision gpio pin #01 as an output pin and turn off
 		pin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_27, "MyLED", PinState.HIGH);
-
+		pin2 = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_26, "GROUND", PinState.LOW);
 		// set shutdown state for this pin
 	        pin.setShutdownOptions(true, PinState.HIGH);
 	}
 
-	static public void openDoor()
+	public void openDoor()
 	{
 
 		// gpio low
@@ -376,9 +392,9 @@ public class GLock extends JPanel {
 		}
 		// gpio high for maintain normal state
 		pin.high();
-
+		
 	}
-*/
+
 	
 	public void exitProgram()
 	{
@@ -387,6 +403,35 @@ public class GLock extends JPanel {
 		
 	}
 	
+
+	class Picture extends  Thread{
+		String path="";
+        public  Picture()  
+        {
+                
+        }
+
+        public  void  run()  {
+        	path = imageSrcPath + sc.getId() + "_" + networking.getDay() + "_" + networking.getTime() + ".jpg";
+        	takePicture();
+        	networking.uploadFile(path, sc.getId());
+        }
+
+    	public void takePicture()
+    	{
+    		
+    		System.out.println(path);
+    		networking.executeCommand("raspistill -t 100 -o " + path);
+    		try{
+    			Thread.sleep(300);
+    		} catch(Exception ex){
+				ex.printStackTrace();
+			}
+    	}
+    	
+
+	}//server
+	*/
 }
 
 

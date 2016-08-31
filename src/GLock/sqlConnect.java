@@ -29,7 +29,7 @@ class sqlConnect {
 	private sqlConnect() {
 		// TODO Auto-generated constructor stub
 		// a url which indicates server/dbname
-		url = "jdbc:mysql://192.168.0.13:3306/kanglab_db?useSSL=false";
+		url = "jdbc:mysql://192.168.0.46:3306/kanglab_db?useSSL=false";
 		con = null;
 		stmt = null;
 		rs = null;
@@ -62,7 +62,7 @@ class sqlConnect {
 	public void jdbcDriverLoad()
 	{
 		try{
-			Class.forName("org.gjt.mm.mysql.Driver");
+			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("jdbc driver load Successed!!!");
 		} catch(ClassNotFoundException e){
 			System.out.println(e.getMessage());
@@ -202,7 +202,7 @@ class sqlConnect {
 		
 		try {
 			
-			String localIp = networking.getLocalServerIp();
+			String localIp = networking.getLocalIp();
 			stmt.executeUpdate("update users set ip_address = '" + localIp + "' where id = '" + id + "';");
 			System.out.println(localIp);
 			

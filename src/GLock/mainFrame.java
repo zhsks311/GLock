@@ -1,6 +1,9 @@
 package GLock;
 
 import java.awt.CardLayout;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+
 import javax.swing.JFrame;
 
 public class mainFrame extends JFrame {
@@ -16,6 +19,12 @@ public class mainFrame extends JFrame {
         getContentPane().add("One", new Login(this));
         getContentPane().add("Two", glock);
         
+//        // full screening code
+//        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+//        GraphicsDevice gd = ge.getDefaultScreenDevice();
+//        this.setUndecorated(true);
+//        gd.setFullScreenWindow(this);
+//        
         setVisible(true);
     }
      

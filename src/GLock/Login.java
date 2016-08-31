@@ -63,16 +63,7 @@ public class Login extends JPanel{
 
         jButton1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-            	
-
-        		
-        		/*
-        		 * For Linux
-        		// set Gpio for door control
-        		glock.setGpio();
-        		*/
-        		
-            	
+    
             	//get id and try login
             	sc.connectToMysql();
             	sc.setId(jTextField1.getText());
@@ -133,7 +124,7 @@ public class Login extends JPanel{
                 .addGap(90, 90, 90))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(162, 162, 162))
         );
         layout.setVerticalGroup(

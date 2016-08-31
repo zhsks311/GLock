@@ -1,14 +1,6 @@
 package GLock;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
@@ -26,8 +18,8 @@ import java.util.HashMap;
 
 public class networking {
 
-	static String serverIP = "218.150.181.86"; // 127.0.0.1 & localhost
-
+	static String serverIP = "192.168.0.46"; // 127.0.0.1 & localhost
+	static GLock glock = GLock.getInstance();
 	static class TCPServer extends Thread {
 
 		static String command;
@@ -108,26 +100,21 @@ public class networking {
 		        		System.out.println("Messages from client : " + command);
 		        		String[] splitter = new String[2];
 		        		splitter = command.split("\\.", -1);
-		        		if(splitter.length > 1){
-		          	            	  
-		          	        System.out.println(splitter.length);
-		          		    System.out.println(splitter[1]);
-		          		             
-		          		    /*
-		          		    * For Linux
-		          		    if(command.equals("openDoor"))
-		          		    	GLock.openDoor();
-		          		              	              
-		          		    if(command.contains("uidFromRaspberry"))
-		          		    {
-		          		    	if(sb.getUid(splitter[1]))
-		          				GLock.openDoor();
-							}
-		          		    */
-		          		   
+		        		
+		        		
+		        		if(command.equals("openDoor"))
+		          		    	glock.procDoor(true);
+              
+		          		 if(command.contains("uidFromRaspberry"))
+		          		 {
+		          			 if(sb.getUid(splitter[1]))
+		          			 glock.procDoor(true);
+		          		 }
+		          		
 		          		    System.out.println("Terminating communication.");
 		          		    System.out.println("[" + getTime() + "]" + " Data Received");
-	          	        }//if - length
+		          		    
+	          	        
 	        		} // while   
 
 	                }  catch(IOException  ignored)  {}  
@@ -152,7 +139,7 @@ public class networking {
 			while(true)
 			{
 				try{
-					String localIp = InetAddress.getLocalHost().getHostAddress();
+					String localIp = networking.getLocalIp();
 			        System.out.println("Trying Communication. Server IP : " + serverIP);
 			        // make socket and try communication
 			        Socket socket = new Socket(serverIP, 8107);
@@ -187,7 +174,7 @@ public class networking {
 	}//heartbeat
 
 	public static String getTime() {
-		SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 	      return f.format(new Date());
 	} // getTime
 	
@@ -212,7 +199,7 @@ public class networking {
 		heartbeat.start();
 	}
 	
-	public static int uploadFile(String sourceFileUri) {
+	public static int uploadFile(String sourceFileUri, String id) {
 
 	        String fileName = sourceFileUri;
 	
@@ -238,12 +225,12 @@ public class networking {
 	        	
 		        int serverResponseCode = 0;
 				try {
-		
+
 		        // open a URL connection to the Servlet
 		        FileInputStream fileInputStream = new FileInputStream(sourceFile);
-		        URL url = new URL("http://" + serverIP + portNumber + "/glock/upload.php");
+		        URL url = new URL("http://" + serverIP + portNumber + "/glock/upload.php?id=" + id);
 		        
-		
+		        
 		        // Open a HTTP  connection to  the URL
 		        conn = (HttpURLConnection) url.openConnection();
 		        conn.setDoInput(true); // Allow Inputs
@@ -292,7 +279,7 @@ public class networking {
 	        if(serverResponseCode == 200){
 	        	System.out.println("upload successed");
 	        }
-	
+	        System.out.println("upload tried");
 	        //close the streams //
 	        fileInputStream.close();
 	        dos.flush();
@@ -314,6 +301,55 @@ public class networking {
 	
 	        } // End else block 
 	}  
+	
+
+	public static void callPush(String id) {
+
+
+		
+		BufferedReader br;
+		String body = "id=" + id;
+		URL url ;
+		
+		try {
+		url = new URL( "http://" + serverIP +":80" + "/glock/push_notification.php" );
+			
+		HttpURLConnection  huc = (HttpURLConnection) url.openConnection();
+		 
+		// request on POST method
+		huc.setRequestMethod("POST");
+		 
+		huc.setDoInput(true);
+		huc.setDoOutput(true);
+		huc.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+		
+		OutputStream os = huc.getOutputStream();
+		 
+		os.write( body.getBytes("utf-8") );
+		 
+		os.flush();
+		os.close();
+
+		br = new BufferedReader( new InputStreamReader( huc.getInputStream(), "UTF-8" ), huc.getContentLength() );
+			
+		String buf;
+		
+		//print message got on a browser
+		while( ( buf = br.readLine() ) != null ) {
+		System.out.println( buf );
+		}
+			 
+		br.close();
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 
+	
+   
+	}  
+
 
 	
 	static String executeCommand(String command) {
@@ -340,7 +376,7 @@ public class networking {
 
 	}
 	
-	public static String getLocalServerIp()
+	public static String getLocalIp()
 	{
 		try
 		{
