@@ -24,7 +24,7 @@ public class mainFrame extends JFrame {
 //        GraphicsDevice gd = ge.getDefaultScreenDevice();
 //        this.setUndecorated(true);
 //        gd.setFullScreenWindow(this);
-//        
+        
         setVisible(true);
     }
      

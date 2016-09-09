@@ -149,12 +149,13 @@ public class networking {
 			        DataOutputStream dos = new DataOutputStream(out);  // sub stream
 			        
 			        // write local ip to server
-			        dos.writeUTF(localIp);
+			        dos.writeUTF("_"+localIp);
 			        
 			        System.out.println("HeartBeat successed, and terminating communication.");
 			         
 			        // close socket and stream
 			        dos.close();
+			        out.close();
 			        socket.close();
 			        
 			        // code for wait 9 seconds

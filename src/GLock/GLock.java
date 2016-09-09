@@ -35,14 +35,14 @@ import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.Statement;
 import GLock.networking.TCPServer.Listener;
 
-/* For Linux
+
 //pi4j
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
-*/
+
 
 public class GLock extends JPanel {
 
@@ -60,11 +60,11 @@ public class GLock extends JPanel {
 	// counting how many number button pressed
 	int btnPressCnt = 0;
 
-	/* For Linux
+
 	GpioPinDigitalOutput pin;
 	GpioPinDigitalOutput pin2;
 	GpioController gpio;
-	 */
+
 	boolean linuxFlag = true;
 	private int falseCount = 0;
 	
@@ -94,13 +94,13 @@ public class GLock extends JPanel {
 	public void callInitailData()
 	{
 
-		defaultIdSet();
-		/* For Linux
-		setGpio();
-		*/
-		sc.jdbcDriverLoad();
-		sc.connectToMysql();
 		
+		setGpio();
+	
+		
+		sc.connectToMysql();
+		lPwd = sc.getLockPwd();
+		System.out.println("passwords : " + lPwd);
 		// initializing variables about security time
 		// need to get data from server later
 		// and input data to variable		
@@ -142,12 +142,6 @@ public class GLock extends JPanel {
 			}
 		});
 		
-	}
-	
-	
-	public void defaultIdSet()
-	{
-		setLpwd("1234");
 	}
 	
 	public void setLpwd(String pwd)
@@ -202,14 +196,14 @@ public class GLock extends JPanel {
 					
 					if(( falseCount > 2 && btnPressCnt < 1) || (isSecureTime()&& btnPressCnt < 1))
 					{
-						/* For Linux
+						
 						if(linuxFlag)
 						{
 							Picture p = new Picture();
 							p.start();
 							
 						}
-						*/
+						
 					} 
 					btnPressCnt++;
 				}
@@ -250,9 +244,9 @@ public class GLock extends JPanel {
 		Boolean isTempPwd = sb.isValidTempPwd(input);
 		if(truth){
 			
-		/* For Linux
+	
 			  openDoor();
-		 */
+	
 			JOptionPane.showMessageDialog(null, "OPEN");
 			
 			// reset the counts that is added when input wrong password
@@ -363,7 +357,7 @@ public class GLock extends JPanel {
 		return true;
 	}
 	
-	/*For Linux
+	
 
 	public void setGpio()
 	{
@@ -431,7 +425,7 @@ public class GLock extends JPanel {
     	
 
 	}//server
-	*/
+
 }
 
 

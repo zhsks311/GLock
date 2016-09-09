@@ -196,6 +196,25 @@ class sqlConnect {
 		
 	}
 	
+	String getLockPwd()
+	{
+		String lpwd = "";
+		String query = "select * from users where id = '" + id + "';";
+		try {
+			
+			rs = stmt.executeQuery(query);
+			
+			if(rs.next())
+				lpwd = rs.getString(4);
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return lpwd;
+	}
+	
 	// send local ip to db
 	public void sendIp()
 	{
@@ -242,7 +261,7 @@ class sqlConnect {
 		} catch (SQLException e) {	
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+	}
 		
 		
 		

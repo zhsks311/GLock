@@ -64,6 +64,9 @@ public class Login extends JPanel{
         jButton1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
     
+
+        		sc.jdbcDriverLoad();
+            	
             	//get id and try login
             	sc.connectToMysql();
             	sc.setId(jTextField1.getText());
