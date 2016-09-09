@@ -35,14 +35,14 @@ import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.Statement;
 import GLock.networking.TCPServer.Listener;
 
-
+/* Linux
 //pi4j
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
-
+*/
 
 public class GLock extends JPanel {
 
@@ -60,11 +60,11 @@ public class GLock extends JPanel {
 	// counting how many number button pressed
 	int btnPressCnt = 0;
 
-
+/* Linux
 	GpioPinDigitalOutput pin;
 	GpioPinDigitalOutput pin2;
 	GpioController gpio;
-
+*/
 	boolean linuxFlag = true;
 	private int falseCount = 0;
 	
@@ -94,9 +94,9 @@ public class GLock extends JPanel {
 	public void callInitailData()
 	{
 
-		
+		/* Linux
 		setGpio();
-	
+	*/
 		
 		sc.connectToMysql();
 		lPwd = sc.getLockPwd();
@@ -186,6 +186,7 @@ public class GLock extends JPanel {
 			button.setText("" + strs[i]);
 			button.setBackground(Color.BLACK);
 			button.setForeground(Color.white);
+			button.setFont(new Font("Sans-Serif", 0, 20));
 				
 			button.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -244,9 +245,9 @@ public class GLock extends JPanel {
 		Boolean isTempPwd = sb.isValidTempPwd(input);
 		if(truth){
 			
-	
+			/* Linux
 			  openDoor();
-	
+	*/
 			JOptionPane.showMessageDialog(null, "OPEN");
 			
 			// reset the counts that is added when input wrong password
@@ -358,7 +359,7 @@ public class GLock extends JPanel {
 	}
 	
 	
-
+	/* Linux
 	public void setGpio()
 	{
 		// create gpio controller
@@ -388,7 +389,7 @@ public class GLock extends JPanel {
 		pin.high();
 		
 	}
-
+*/
 	
 	public void exitProgram()
 	{
