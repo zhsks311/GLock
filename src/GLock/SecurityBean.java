@@ -13,7 +13,7 @@ public class SecurityBean {
 	int[] sEndHour = new int[7];
 	int[] sStartMin = new int[7];
 	int[] sEndMin = new int[7];
-	
+	String lPwd;
 	// a variable for uid check 
 	HashMap<String, Boolean> uid = new HashMap<String, Boolean>();
 	
@@ -27,7 +27,7 @@ public class SecurityBean {
 		
 	}
 
-	static public synchronized SecurityBean getInstance()
+	static public SecurityBean getInstance()
 	{		
 		
 		if(sb == null)
@@ -40,6 +40,14 @@ public class SecurityBean {
 		System.out.println(key);
 		System.out.println(uid.get(key));
 		return uid.get(key) == null ? false : true;
+	}
+	
+	public String getLPwd() {
+		return lPwd;
+	}
+
+	public void setTempPwd(String lPwd) {
+		this.lPwd = lPwd;
 	}
 
 	public ArrayList<String> getTempPwd() {

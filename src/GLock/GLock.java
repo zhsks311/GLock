@@ -35,14 +35,14 @@ import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.Statement;
 import GLock.networking.TCPServer.Listener;
 
-/* Linux
+
 //pi4j
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
-*/
+
 
 public class GLock extends JPanel {
 
@@ -53,19 +53,19 @@ public class GLock extends JPanel {
 	private String input="";
 
 	// lPwd is a password for doorlock
-	private String lPwd;
+	
 	sqlConnect sc = sqlConnect.getInstance();
 	List<String> disposablePwd = new ArrayList<>();
 	
 	// counting how many number button pressed
 	int btnPressCnt = 0;
 
-/* Linux
+//linux
 	GpioPinDigitalOutput pin;
 	GpioPinDigitalOutput pin2;
 	GpioController gpio;
-*/
-	boolean linuxFlag = true;
+
+
 	private int falseCount = 0;
 	
 	String srcPath = "/home/pi/project/";
@@ -79,7 +79,7 @@ public class GLock extends JPanel {
 	private GLock() { }
 	
 	
-	public static synchronized GLock getInstance()
+	public static GLock getInstance()
 	{		
 		
 		if(glock == null){
@@ -94,21 +94,21 @@ public class GLock extends JPanel {
 	public void callInitailData()
 	{
 
-		/* Linux
+	//linux
 		setGpio();
-	*/
+	
 		
 		sc.connectToMysql();
-		lPwd = sc.getLockPwd();
-		System.out.println("passwords : " + lPwd);
+		
 		// initializing variables about security time
 		// need to get data from server later
 		// and input data to variable		
 		sb = SecurityBean.getInstance();
-		sb = sc.getSecureDate();
+		sc.getSecureDate();
 		sc.getDisposablePwd();
 		sc.getUid();
-		
+		sc.getLockPwd();
+		System.out.println("passwords : " + sb.lPwd);
 		// Update ip to command to doohttps://www.youtube.com/watch?v=dET0YZCp-xYrlock
 		
 		sc.sendIp();
@@ -123,11 +123,10 @@ public class GLock extends JPanel {
 		this.setLayout(new BorderLayout());
 		Panel = new JPanel(new GridLayout(3, 4));
 		buttons = getButtons(12);
+	
 		layoutButtons();
-
 		this.add(Panel);
-		this.add(getCheckButton(), BorderLayout.EAST);
-
+		this.add(getCheckButton(), BorderLayout.WEST);
 		this.setVisible(true);
 			
 	}
@@ -146,10 +145,10 @@ public class GLock extends JPanel {
 	
 	public void setLpwd(String pwd)
 	{
-		lPwd = pwd;
+		sb.lPwd = pwd;
 	}
 
-	public String getLpwd() { return lPwd; }
+	public String getLpwd() { return sb.lPwd; }
 	
 	
 	// shuffle buttons
@@ -166,6 +165,7 @@ public class GLock extends JPanel {
 		for (JButton button : buttons) {
 			Panel.add(button);
 		}
+
 		Panel.revalidate();
 		Panel.repaint();
 	}
@@ -186,7 +186,7 @@ public class GLock extends JPanel {
 			button.setText("" + strs[i]);
 			button.setBackground(Color.BLACK);
 			button.setForeground(Color.white);
-			button.setFont(new Font("Sans-Serif", 0, 20));
+			button.setFont(new Font("Sans-Serif", 0, 30));
 				
 			button.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -197,14 +197,8 @@ public class GLock extends JPanel {
 					
 					if(( falseCount > 2 && btnPressCnt < 1) || (isSecureTime()&& btnPressCnt < 1))
 					{
-						
-						if(linuxFlag)
-						{
 							Picture p = new Picture();
 							p.start();
-							
-						}
-						
 					} 
 					btnPressCnt++;
 				}
@@ -219,6 +213,7 @@ public class GLock extends JPanel {
 	// Check Passwords when OK button clicked
 	private JButton getCheckButton() {
 		JButton check = new JButton("OK");
+		check.setFont(new Font("Sans-Serif", 0, 30));
 		check.setBackground(Color.black);
 	
 		check.setForeground(Color.white);
@@ -229,7 +224,7 @@ public class GLock extends JPanel {
 				System.out.println("\n"+input);
 				ShuffleButtons();
 				
-				if(input.equals(lPwd) || sb.isValidTempPwd(input))
+				if(input.equals(sb.lPwd) || sb.isValidTempPwd(input))
 					procDoor(true);
 				else
 					procDoor(false);
@@ -245,10 +240,10 @@ public class GLock extends JPanel {
 		Boolean isTempPwd = sb.isValidTempPwd(input);
 		if(truth){
 			
-			/* Linux
+//linux
 			  openDoor();
-	*/
-			JOptionPane.showMessageDialog(null, "OPEN");
+
+			//JOptionPane.showMessageDialog(null, "OPEN");
 			
 			// reset the counts that is added when input wrong password
 			falseCount = 0;
@@ -273,7 +268,7 @@ public class GLock extends JPanel {
 			
 			// increase the counts for password incorrect 
 			falseCount++;
-			JOptionPane.showMessageDialog(null, "Passwords incorrected.");
+			//JOptionPane.showMessageDialog(null, "Passwords incorrected.");
 			
 			// send log
 			try{
@@ -359,7 +354,8 @@ public class GLock extends JPanel {
 	}
 	
 	
-	/* Linux
+
+ //linux
 	public void setGpio()
 	{
 		// create gpio controller
@@ -389,7 +385,7 @@ public class GLock extends JPanel {
 		pin.high();
 		
 	}
-*/
+
 	
 	public void exitProgram()
 	{
@@ -400,7 +396,9 @@ public class GLock extends JPanel {
 	
 
 	class Picture extends  Thread{
+		
 		String path="";
+		
         public  Picture()  
         {
                 

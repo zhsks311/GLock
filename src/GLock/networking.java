@@ -18,8 +18,9 @@ import java.util.HashMap;
 
 public class networking {
 
-	static String serverIP = "192.168.0.46"; // 127.0.0.1 & localhost
+	static String serverIP = "192.168.1.100"; // 127.0.0.1 & localhost
 	static GLock glock = GLock.getInstance();
+	static sqlConnect sc = sqlConnect.getInstance();
 	static class TCPServer extends Thread {
 
 		static String command;
@@ -101,14 +102,36 @@ public class networking {
 		        		String[] splitter = new String[2];
 		        		splitter = command.split("\\.", -1);
 		        		
-		        		
-		        		if(command.equals("openDoor"))
-		          		    	glock.procDoor(true);
+		        		if(command.contains("open"))
+		        			glock.procDoor(true);
               
 		          		 if(command.contains("uidFromRaspberry"))
 		          		 {
 		          			 if(sb.getUid(splitter[1]))
-		          			 glock.procDoor(true);
+		          				glock.procDoor(true);
+		          			 else 
+		          				 glock.procDoor(false);
+		          		 }
+		          		 
+		          		 if(command.contains("updateData"))
+		          		 {
+		          			 sc.connectToMysql();
+		          			 sc.getLockPwd();
+		          			 sc.closeConnection();
+		          		 }
+		          		 
+		          		 if(command.contains("updateSecuredate"))
+		          		 {
+		          			 sc.connectToMysql();
+		          			 sc.getSecureDate();
+		          			 sc.closeConnection();	          			 
+		          		 }
+		          		 
+		          		 if(command.contains("temp_pw"))
+		          		 {
+		          			 sc.connectToMysql();
+		          			 sc.getDisposablePwd();
+		          			 sc.closeConnection();
 		          		 }
 		          		
 		          		    System.out.println("Terminating communication.");

@@ -29,7 +29,7 @@ class sqlConnect {
 	private sqlConnect() {
 		// TODO Auto-generated constructor stub
 		// a url which indicates server/dbname
-		url = "jdbc:mysql://192.168.0.46:3306/kanglab_db?useSSL=false";
+		url = "jdbc:mysql://192.168.1.100:3306/kanglab_db?useSSL=false";
 		con = null;
 		stmt = null;
 		rs = null;
@@ -110,7 +110,7 @@ class sqlConnect {
 	}
 	
 	
-	public SecurityBean getSecureDate()
+	public void getSecureDate()
 	{
 		System.out.println(id + " id inust");
 
@@ -171,7 +171,6 @@ class sqlConnect {
 			e.printStackTrace();
 		}
 		
-		return sb;
 	}
 	
 	
@@ -196,23 +195,23 @@ class sqlConnect {
 		
 	}
 	
-	String getLockPwd()
+	public void getLockPwd()
 	{
-		String lpwd = "";
+		
 		String query = "select * from users where id = '" + id + "';";
 		try {
 			
 			rs = stmt.executeQuery(query);
 			
 			if(rs.next())
-				lpwd = rs.getString(4);
+				sb.lPwd = rs.getString(4);
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		return lpwd;
+		
 	}
 	
 	// send local ip to db
