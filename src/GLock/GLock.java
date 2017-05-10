@@ -109,7 +109,7 @@ public class GLock extends JPanel {
 		sc.getUid();
 		sc.getLockPwd();
 		System.out.println("passwords : " + sb.lPwd);
-		// Update ip to command to doohttps://www.youtube.com/watch?v=dET0YZCp-xYrlock
+		// Update ip data
 		
 		sc.sendIp();
 		sc.closeConnection();
